@@ -1,0 +1,60 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+
+
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="statement-input">
+    <template>
+          - [[url]] - [[dataset]] - [[graphe]]
+
+     <paper-input id="sujetField" type="text"></paper-input>
+     <paper-button raised on-tap="addStatement">Ajouter un statement</paper-button>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'statement-input',
+            behaviors: [ ReduxBehavior ],
+            actions:{
+                add: function(name){
+                    return {
+                        type: 'ADD_STATEMENT',
+                        statement: name
+                    }
+                }
+
+            },
+            properties: {
+               url: {
+                    type: String,
+                    statePath: 'url'
+                },
+                dataset:{
+                    type: String,
+                    statePath: 'dataset'
+                },
+                graphe:{
+                    type: String,
+                    statePath: 'graphe'
+                }
+            },
+         /*   computedUrl: function(endpoint){
+                return endpoint.url;
+            },*/
+            addStatement: function() {
+                const field = this.$.sujetField;
+                if (field.value){
+                    this.dispatch('add', field.value);
+                    field.value = null;
+                    field.focus();
+                }
+            }
+        });
+
+    </script>
+
+</dom-module>

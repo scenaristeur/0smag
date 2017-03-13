@@ -1,0 +1,83 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+
+
+<dom-module id="smag-parametres">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  <!--  <h2 class="page-title">{{endpoint}}</h2>-->
+  <!--  <span class="paper-font-body2">Endpoint : </span>-->
+    <!-- Listens for "input" event and sets greeting to <input>.value -->
+  <!--  <input class="paper-font-body2" value="{{endpoint::input}}">-->
+  <p> Vous devez dans un premier temps vous assurer d'avoir accès à un serveur / endpoint Sparql tel que décrit ici <a href="http://smag0.blogspot.fr/p/blog-page_14.html" target="_blank">
+    http://smag0.blogspot.fr/p/blog-page_14.html</a>
+    <paper-input label="Endpoint" value="{{endpoint::input}}"></paper-input>
+  <!--    <span class="paper-font-body2">Dataset : </span>-->
+    <paper-input label="Dataset" value="{{dataset::input}}"></paper-input>
+    <paper-input label="Graphe" value="{{graphe::input}}"></paper-input>
+    <app-localstorage-document id="store" key="endpoint" data="{{endpoint::input}}">    </app-localstorage-document>
+    <app-localstorage-document key="dataset" data="{{dataset::input}}">    </app-localstorage-document>
+    <app-localstorage-document key="graphe" data="{{graphe::input}}">    </app-localstorage-document>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'smag-parametres',
+
+        properties: {
+        /* store:{
+            type:Object,
+            value:{},
+            notify:true
+          },*/
+          endpoint: {
+            type: String,
+            value: 'http://127.0.0.1:3030',
+            notify: true
+          },
+          dataset:{
+            type: String,
+            value: "test",
+            notify:true
+          },
+          graphe:{
+            type: String,
+            value: "<http://smag0.blogspot.fr/SparqlUpdate>",
+            notify:true
+          }
+        },
+      /*  attached: function(){
+          console.log(this.store.endpoint);
+          console.log(this.endpoint);
+          if (this.endpoint == undefined){
+            console.log('init');
+        //    this.endpoint = 'http://127.0.0.1:3030/test';
+            console.log(this.store.endpoint);
+            console.log(this.endpoint);
+          }
+        }*/
+      });
+    })();
+  </script>
+
+</dom-module>

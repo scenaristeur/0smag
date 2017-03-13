@@ -1,0 +1,257 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../../redux-store.html">
+
+<dom-module id="smag-update">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+<!--
+    <app-localstorage-document id="store" key="endpoint" data="{{endpoint}}">    </app-localstorage-document>
+    <app-localstorage-document key="dataset" data="{{dataset}}">    </app-localstorage-document>
+    <app-localstorage-document key="graphe" data="{{graphe}}">    </app-localstorage-document>
+    <app-localstorage-document key="nb" data="{{nb}}">    </app-localstorage-document>-->
+
+    <iron-ajax
+    id="ajaxupdate"
+    url="{{urlUpdate}}"
+    body="{{options}}"
+    method="POST"
+    handle-as="document"
+    content-type="application/x-www-form-urlencoded"
+    on-response="handleResponse"
+    on-error="ajaxError">
+  </iron-ajax>
+
+{{url}}
+{{dataset}}
+{{graphe}}
+  <paper-input
+    type="text"
+    style="width:20em"
+    label="Sujet"
+    value="{{sujet::change}}"></paper-input>
+
+    <paper-input
+    type="text"
+    style="width:20em"
+    label="propriete"
+    value="{{propriete::change}}"></paper-input>
+
+    <paper-input
+    type="text"
+    style="width:20em"
+    label="Objet"
+    value="{{objet::change}}"></paper-input>
+    <paper-toggle-button id="literal">Literal</paper-toggle-button>
+
+  <paper-button
+    raised
+    on-tap="sendUpdate">
+    <iron-icon icon="queue"></iron-icon> <!-- ne s'affiche pas ? -->
+    Envoyer
+</paper-button>
+<!--
+    <p class="paper-font-body2">Update Endpoint : </p>
+ <p>{{url}}</p>
+ <p>{{endpoint}}</p>
+ <p>{{dataset}}</p>-->
+
+</br></br>
+    <template is="dom-bind" result="{{result}}" requete="{{requete}}" >
+    <div>Result : {{result}}</div>
+  </br>
+    <div>Requete : {{requete}}</div>
+</template>
+
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'smag-update',
+
+        properties: {
+          url: {
+            type: String,
+        //    default: 'http://127.0.0.1:3030',
+            notify: true,
+        //    observer: 'computedUrl',
+            statePath: 'url'
+          },
+          dataset: {
+            type: String,
+          //  default: 'test',
+            notify: true,
+        //    observer: 'computedUrl',
+              statePath: 'dataset'
+          },
+          action: {
+            type: String,
+          //  default: 'update',
+            notify: true,
+            observer: 'computedUrl'
+          },
+          graphe: {
+            type: String,
+          //  default: '<http://smag0.blogspot.fr/SparqlUpdate>',
+            notify: true,
+        //    observer: 'computedUrl',
+            statePath: 'graphe'
+          },
+          nb : {
+            type : Number,
+            value: 0,
+            notify: true
+          },
+          /**
+				* Le sujet du triplet RDF
+				*/
+				sujet : {
+					value: '',
+					notify: true
+				},
+
+				/**
+				* La propriete du triplet RDF
+				*/
+				propriete : {
+					value: 'type',
+					notify: true
+				},
+
+				/**
+				* L'objet du triplet RDF
+				*/
+				objet : {
+					value: 'Projet',
+					notify: true
+				},
+
+				/**
+				* Les paramètres de la requete update
+				*/
+				options: {
+          type: Object,
+          notify: true
+				//	computed: 'computeUpdate(sujet,propriete,objet)'
+				},
+
+				/**
+				*variable pour afficher la requete, n'est pas utile
+				*/
+				requete: {
+          type: Object,
+					notify: true
+				},
+
+				/**
+				* La réponse du serveur retournée par la requete de mise à jour
+				*/
+				result: {
+          type : Object,
+					notify: true
+				},
+        url:{
+          type: String,
+          notify: true
+          //computed: 'computedUrl(endpoint,dataset,action)'
+        }
+        },
+        computedUrl: function(){
+          return [this.endpoint,this.dataset,this.action].join('/');
+        },
+        /**
+  				* Construit la requete depuis les variables sujet, propriete, objet
+  				*/
+  			computeUpdate: function(sujet,propriete,objet,graphe){
+        //  this.url = this.computedUrl();
+          var literal = this.$.literal.checked;
+          var propSend="smag:"+propriete+" ";
+          if (propriete == "type"){
+  				      propSend="<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+  				}
+
+
+  				var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+  				update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+  				update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+  				update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+  				update += "INSERT DATA { \n";
+          if (graphe != ""){
+  				      update += "GRAPH "+graphe+"{ \n";
+              }
+          if(literal){
+                objet = '"'+objet+'"';
+  				      update += "smag:"+sujet+"   "+propSend+"   "+objet+" . \n";
+          }else{
+  				      update += "smag:"+sujet+"   "+propSend+"   smag:"+objet+" . \n";
+          }
+          if (graphe != ""){
+  				      update += "  } \n";
+              }
+  				update += "  } \n";
+  				//console.log(update);
+          this.requete=update;
+  				return {update: update};
+  			},
+
+  			/**
+  			* Execute la requete
+  			*/
+  			sendUpdate: function (e){
+  				console.log(this.sujet);
+  				console.log(this.propriete);
+          console.log(this.graphe);
+  				console.log(this.objet);
+          console.log(this.$.ajaxupdate.url);
+          this.options = this.computeUpdate(this.sujet, this.propriete, this.objet,this.graphe);
+        	this.$.ajaxupdate.generateRequest();
+  			},
+
+  			/**
+  			* recupere et parse la reponse du serveur
+  			*/
+  			handleResponse: function(data){
+  				var html=data.detail.response.getElementsByTagName("html")[0];
+  				var body=html.getElementsByTagName("body")[0];
+  				var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
+  				this.result=resultat;
+  				console.log(this.result);
+          this.nb=this.nb+1;
+//          console.log(this.nb);
+  			},
+
+        /**
+        * en cas d'erreur de la requete
+        */
+        ajaxError : function(data){
+             console.log(data.detail.error.message);
+             this.result =  data.detail.error.message+"\n"+this.$.ajaxupdate.url;
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

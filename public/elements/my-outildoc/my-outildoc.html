@@ -1,0 +1,157 @@
+<!--
+	@license
+	Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+	This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+	The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+	The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+	Code distributed by Google as part of the polymer project is also
+	subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild-->
+
+<dom-module id="my-outildoc">
+	<template>
+		<style>
+			:host {
+			display: block;
+			}
+		</style>
+		
+		<p>Page en cours de rédaction, l'ancienne doumentation est toujurs accessible via ce bouton </p> <a href="http://10.153.82.71/tinaExtractor/index.html" target="_blank" class="inherit"><paper-button raised>TinaExtractor (ancienne doc )</paper-button></a>
+		
+		<ul>
+			<template is="dom-repeat" items="{{items}}">
+				<li><span class="paper-font-body1">{{item}}</span></li>
+			</template>
+		</ul>
+		
+		
+		<section data-route="fonctionnement">
+			<paper-material elevation="1">
+                <h2 class="page-title">Fonctionnement</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="autoinstall">
+			<paper-material elevation="1">
+                <h2 class="page-title">Installation automatique</h2>
+                <p>Création du répertoire de travail, téléchargement du script d'auto-installation, modification de ses droits d'execution, lancement de l'auto-install</p>
+				<ol>
+					<template is="dom-repeat" items="{{itemsautoinstall}}">
+						<li><span class="paper-font-body1">{{item}}</span></li>
+					</template>
+				</ol>
+			</paper-material>
+		</section>
+		
+		<section data-route="utilisation">
+			<paper-material elevation="1">
+                <h2 class="page-title">Utilisation</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="manualinstall">
+			<paper-material elevation="1">
+                <h2 class="page-title">Installation manuelle</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="whatIdo">
+			<paper-material elevation="1">
+                <h2 class="page-title">Ce que fait tinaExtractor</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="whatIdont">
+			<paper-material elevation="1">
+                <h2 class="page-title">Ce qu'il ne fait pas</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="utilaccomp">
+			<paper-material elevation="1">
+                <h2 class="page-title">Utilisation dans le cadre de l'accompagnement de projets</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="problems">
+			<paper-material elevation="1">
+                <h2 class="page-title">Problèmes connus</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		<section data-route="contact">
+			<paper-material elevation="1">
+                <h2 class="page-title">Contact</h2>
+                <p>fonctionnement</p>
+				<p>documente</p>
+			</paper-material>
+		</section>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</template>
+	
+	<script>
+		(function() {
+			'use strict';
+			
+			console.log("myoutildoc");
+			Polymer({
+				is: 'my-outildoc',
+				properties: {
+					items: {
+						type: Array,
+						notify: true,
+					}
+				},
+				ready: function() {
+					this.items = [
+					'Fonctionnement ',
+					'Installation automatique',
+					'Utilisation',
+					'Installation manuelle',
+					'Ce que fait tinaExtractor',
+					'Ce qu\'il ne fait pas',
+					'Utilisation dans le cadre de l\'accompagnement de projets',
+					'Problèmes connus',
+					'Contact'
+					];
+					
+					this.itemsautoinstall = [
+					'Connectez-vous au serveur de sauvegarde ',
+					'Pre-requis : ne pas être sous l\'environnement Tina, éventuellement en sortir avec "su -"',
+					'Créez un dossier dans lequel vous souhaitez installer "tinaExtractor", par exemple avec "mkdir tinaExtractor" et placez vous dans ce dossier avec "cd tinaExtractor"',
+					'Lancez la commande " wget http://10.153.82.71/tinaExtractor/install_tinaExtractor.sh " pour récupérer le script d\'installation ',
+					'Le rendre executable avec " chmod +x install_tinaExtractor.sh " ',
+					'Le lancer avec la commande " ./install_tinaExtractor.sh "'
+					];
+				}
+			});
+		})();
+	</script>
+</dom-module>

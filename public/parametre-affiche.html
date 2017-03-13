@@ -1,0 +1,150 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+
+
+
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="parametre-affiche">
+
+
+    <template>
+
+      <iron-ajax
+        auto
+        id="getUptime"
+        url="{{urlUptime}}"
+        params="{{options}}"
+        handle-as="json"
+        on-response="handleResponse"
+        on-error="ajaxError"
+        debounce-duration="300">
+      </iron-ajax>
+
+
+
+
+      <h3>Serveur Endpoint</h3>
+      <paper-input id="urlInput" label="url" placeholder="http://127.0.0.1:3030" type="text" value="{{url}}"></paper-input>
+      {{uptime}} {{uptimeTexte}}
+      <paper-input id="dsInput" label="Dataset ({{dss.length}})" placeholder="test" type="text" value="{{ds}}"></paper-input>
+
+      <template is="dom-repeat" id="dssList" items="{{dss}}">
+        <paper-item on-tap="selectds" ds={{afficheDsName(item)}}>{{afficheDsName(item)}}</paper-item>
+      </template>
+
+    <array-selector id="selector" items="{{dss}}" selected="{{selected}}" toggle></array-selector>
+
+      <paper-input id="grapheInput" label="graphe" placeholder="<http://smag0.blogspot.fr/SparqlUpdate>" type="text" value="{{graphe}}"></paper-input>
+      <paper-button raised on-tap="updateParametre">Enregistrer</paper-button>
+      <paper-button raised on-tap="resetDefault">Utiliser les paramètres par defaut</paper-button>
+{{ds}}{{url}}{{graphe}}
+    </template>
+
+    <script>
+        Polymer({
+            is: 'parametre-affiche',
+            behaviors: [ ReduxBehavior, Polymer.IronSelectableBehavior ],
+            observers: ["_selectedChanged(selected)"],
+            actions:{
+              update: function(url,ds,graphe){
+                return {
+                  type: 'UPDATE_PARAMETRES',
+                  url: url,
+                  ds: ds,
+                  graphe: graphe
+                }
+              },
+              resetDefault: function(){
+                return {
+                  type: 'RESET_PARAMETRES'
+                }
+              }
+            },
+            properties: {
+              url: {
+                type: String,
+                statePath: 'url'
+              },
+              ds: {
+                type: String,
+                statePath: 'ds'
+              },
+              graphe: {
+                type: String,
+                statePath: 'graphe'
+              },
+              urlUptime:{
+                type: String,
+                computed: 'computedUrlUptime(url)'
+              },
+              uptime: {
+                type: Number,
+              },
+              uptimeTexte: {
+                type: String,
+              },
+            },
+            updateParametre: function(){
+              const urlField = this.$.urlInput;
+              const dsField = this.$.dsInput;
+              const grapheField = this.$.grapheInput;
+              if (urlField.value && dsField && grapheField){
+                this.dispatch('update', urlField.value, dsField.value, grapheField.value);
+                urlField.focus();
+              }
+            },
+            resetDefault: function(){
+              this.dispatch('resetDefault');
+            },
+            computedUrlUptime: function(url){
+              var urlUptime = url+"/$/server";
+              return urlUptime;
+            },
+            /* Recuperation de la reponse */
+            handleResponse:function(data){
+              var response = data.detail.response;
+              this.uptime = response.uptime;
+              this.uptimeTexte = " millisecondes pour atteindre cet endpoint.";
+              this.dss = response.datasets;
+            },
+            /**
+            * en cas d'erreur de la requete
+            */
+            ajaxError : function(data){
+              //console.log(data);
+              this.uptime = null;
+              this.uptimeTexte = "Temps de réponse du serveur endpoint inconnu";
+              this.dss = [];
+            },
+            afficheDsName: function(item){
+              var name = item['ds.name'];
+              return name;
+            },
+            _selectedChanged: function () {
+              //console.log("selected changed");
+              if (this.selectedItem === undefined) {
+                console.log("selectedItem not set");
+              } else {
+                console.log("selectedItem is set");
+              }
+            },
+            toggleSelection: function(e) {
+              var item = this.$.dssList.itemForElement(e.target);
+              this.$.selector.select(item);
+            },
+            selectds: function(e){
+              var item = this.$.dssList.itemForElement(e.target);
+              this.$.selector.select(item);
+              //console.log(item);
+              this.ds = item['ds.name'].substring(1);
+          }
+        });
+
+    </script>
+
+</dom-module>

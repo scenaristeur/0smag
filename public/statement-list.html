@@ -1,0 +1,56 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+
+
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="statement-list">
+    <template>
+        [[endpoint.url]]
+        <ul>
+            <template is="dom-repeat" items="[[statements]]" as="statement">
+                <li>[[statement]]</li>
+            </template>
+
+        </ul>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'statement-list',
+            behaviors: [ ReduxBehavior ],
+           /* actions:{
+                add: function(name){
+                    return {
+                        type: 'ADD_STATEMENT',
+                        statement: name
+                    }
+                }
+
+            },*/
+            properties: {
+                statements: {
+                    type: Array,
+                    statePath: 'statements'
+                },
+                endpoint: {
+                    type: Object,
+                    statePath: 'endpoint'
+                }
+            },
+/*addStatement: function() {
+                const field = this.$.sujetField;
+                if (field.value){
+                    this.dispatch('add', field.value);
+                    field.value = null;
+                    field.focus();
+                }
+            }*/
+        });
+
+    </script>
+
+</dom-module>

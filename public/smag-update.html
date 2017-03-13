@@ -1,0 +1,204 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="bower_components/polymer/polymer.html">
+<!--<link rel="import" href="bower_components/app-storage/app-localstorage/app-localstorage-document.html">-->
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="smag-update">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+
+    <iron-ajax
+      id="ajaxupdate"
+      url="{{urlUpdate}}"
+      body="{{options}}"
+      method="POST"
+      handle-as="document"
+      content-type="application/x-www-form-urlencoded"
+      on-response="handleResponse"
+      on-error="ajaxError">
+    </iron-ajax>
+
+Endpoint : {{url}}/{{ds}}, graphe : {{graphe}}
+    <paper-input
+      type="text"
+      style="width:20em"
+      label="Sujet"
+      value="{{sujet::change}}">
+    </paper-input>
+
+    <paper-input
+      type="text"
+      style="width:20em"
+      label="propriete"
+      value="{{propriete::change}}">
+    </paper-input>
+
+    <paper-input
+      type="text"
+      style="width:20em"
+      label="Objet"
+      value="{{objet::change}}">
+    </paper-input>
+    <paper-toggle-button id="literal">Literal</paper-toggle-button>
+
+    <paper-button
+      raised
+      on-tap="sendUpdate">
+      <iron-icon icon="queue"></iron-icon> <!-- ne s'affiche pas ? -->
+      Envoyer
+    </paper-button>
+
+    </br></br>
+      <template is="dom-bind" result="{{result}}" requete="{{requete}}" >
+        <div>Result : {{result}}</div>
+        </br>
+        <div>Requete : {{requete}}</div>
+      </template>
+
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'smag-update',
+        behaviors: [ ReduxBehavior ],
+        actions:{
+          update_nb_maj: function(nb){
+            return {
+              type: 'UPDATE_NB_MAJ',
+              nb: nb
+            }
+          }
+        },
+        properties: {
+          url:{
+            type: Object,
+            statePath: 'url'
+          },
+          ds:{
+            type: String,
+            statePath: 'ds'
+          },
+          graphe: {
+            type: String,
+            statePath: 'graphe'
+          },
+          action: {
+            type: String,
+            notify: true,
+          },
+          nb : {
+            type : Number,
+            statePath: 'nb'
+          },
+  				sujet : {
+  					value: '',
+  					notify: true
+  				},
+  				propriete : {
+  					value: 'type',
+  					notify: true
+  				},
+  				objet : {
+  					value: 'Projet',
+  					notify: true
+  				},
+  				options: {
+            type: Object,
+            notify: true
+  				},
+  				requete: {
+            type: Object,
+  					notify: true
+  				},
+  				result: {
+            type : Object,
+  					notify: true
+  				},
+          },
+          /**
+    				* Construit la requete depuis les variables sujet, propriete, objet
+    				*/
+    			computeUpdate: function(sujet,propriete,objet,graphe){
+            this.urlUpdate = [this.url,this.ds,this.action].join('/');
+            var literal = this.$.literal.checked;
+            var propSend="smag:"+propriete+" ";
+            if (propriete == "type"){
+    				      propSend="<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+    				}
+
+    				var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+    				update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+    				update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+    				update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+    				update += "INSERT DATA { \n";
+            if (graphe != ""){
+			           update += "GRAPH "+graphe+"{ \n";
+            }
+            if(literal){
+                  objet = '"'+objet+'"';
+    				      update += "smag:"+sujet+"   "+propSend+"   "+objet+" . \n";
+            }else{
+    				      update += "smag:"+sujet+"   "+propSend+"   smag:"+objet+" . \n";
+            }
+            if (graphe != ""){
+    				      update += "  } \n";
+            }
+    				update += "  } \n";
+            this.requete=update;
+    				return {update: update};
+    			},
+
+    			/**
+    			* Execute la requete
+    			*/
+    			sendUpdate: function (e){
+            this.options = this.computeUpdate(this.sujet, this.propriete, this.objet,this.graphe);
+          	this.$.ajaxupdate.generateRequest();
+    			},
+
+    			/**
+    			* recupere et parse la reponse du serveur
+    			*/
+    			handleResponse: function(data){
+    				var html=data.detail.response.getElementsByTagName("html")[0];
+    				var body=html.getElementsByTagName("body")[0];
+    				var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
+    				this.result=resultat;
+//    				console.log(this.result);
+            var nb=this.nb+1;
+            this.dispatch('update_nb_maj', nb);
+    			},
+
+          /**
+          * en cas d'erreur de la requete
+          */
+          ajaxError : function(data){
+            console.log(data.detail.error.message);
+            this.result =  data.detail.error.message+"\n"+this.$.ajaxupdate.url;
+          }
+      });
+    })();
+  </script>
+
+</dom-module>
