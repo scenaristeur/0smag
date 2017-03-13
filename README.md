@@ -1,4 +1,6 @@
-# PREREQUIS
+# 0smag
+
+- Prerequis
 L'appli "Smag0" nécessite l'accès à un serveur de données ouvertes.
 Nous allons utiliser "Apache Fuseki" comme serveur aussi appelé endpoint.
 Nous aurons besoin d'un dataset, un espace pour stocker nos données.
