@@ -13,6 +13,25 @@ ceci devrait vous indiquer que le serveur est accessible sur le port 3030, c'est
 Vous pouvez vous y rendre et créer un dataset nommé "test"
 Votre serveur est prêt
 
+- Installer l'appli "0smag"
+
+```
+git clone https://github.com/scenaristeur/0smag.git
+cd 0smag
+npm install
+cd public
+bower install
+cd ..
+node .
+
+``` 
+ou en une ligne de commande : 
+
+```
+git clone https://github.com/scenaristeur/0smag.git && cd 0smag && npm install && cd public && bower install && cd .. && node .
+
+```
+
 - Lancer l'appli "Smag0"
 se placer dans le dossier 0smag et lancer "npm install" pour installer les dépendances node.js
 se placer ensuite dans public et lancer "bower install"
