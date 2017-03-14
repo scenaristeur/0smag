@@ -17,19 +17,28 @@
       table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
-        width: 100%;
+      /*  width: 100%;*/
       }
 
       td, th {
         border: 1px solid #dddddd;
         text-align: left;
         padding: 8px;
-        width: 30%;
+       /* width: 30%;*/
+      /*  min-width: 200px;*/
       }
 
       tr:nth-child(even) {
         background-color: #dddddd;
       }
+
+     /* .search-table-outter {border:2px solid red;}*/
+.search-table{table-layout: fixed; margin:40px auto 0px auto; }
+.search-table, td, th{border-collapse:collapse; border:1px solid #777;}
+/*th{padding:20px 7px; font-size:15px; color:#444; background:#66C2E0;}
+td{padding:5px 10px; height:35px;}*/
+
+.search-table-outter { overflow-x: scroll; }
     </style>
 
       <iron-ajax
@@ -59,7 +68,9 @@
 
               <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
               <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
-        <table>
+    <div class="search-table-outter wrapper">
+        <table class="search-table inner">
+
     			<!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
             <tr></tr>
     			<tr>
@@ -90,6 +101,7 @@
     				</tr>
     			</template>
         </table>
+    </div>
 
         <paper-input label="Requête" value="{{query}}"></paper-input>
         <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>

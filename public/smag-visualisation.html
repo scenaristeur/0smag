@@ -25,19 +25,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
-        width: 100%;
+      /*  width: 100%;*/
       }
 
       td, th {
         border: 1px solid #dddddd;
         text-align: left;
         padding: 8px;
-        width: 30%;
+       /* width: 30%;*/
+      /*  min-width: 200px;*/
       }
 
       tr:nth-child(even) {
         background-color: #dddddd;
       }
+
+     /* .search-table-outter {border:2px solid red;}*/
+.search-table{table-layout: fixed; margin:40px auto 0px auto; }
+.search-table, td, th{border-collapse:collapse; border:1px solid #777;}
+/*th{padding:20px 7px; font-size:15px; color:#444; background:#66C2E0;}
+td{padding:5px 10px; height:35px;}*/
+
+.search-table-outter { overflow-x: scroll; }
+
     </style>
 
 
@@ -70,37 +80,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
             <!--<paper-input label="Filtre : ne pas afficher"></paper-input> -->
       <paper-button raised>Sauvegarder</paper-button>
-    <table>
-			<!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
-      <tr></tr>
-			<tr>
-				<template is="dom-repeat" items="{{head}}">
-					<th>{{item}}</th>
-				</template>
-			</tr>
-			<template is="dom-repeat" items="{{results}}">
-        <tr>
-          <td on-tap="showDetailSujet">
-            <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
-            <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
-          </td>
-          <td on-tap="showDetailPredicat">
-            <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
-            <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
-          </td>
-          <td on-tap="showDetailObjet">
-            <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-            <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-          </td>
-          </tr>
-          <tr hidden$={{!modifications}}>
-            <td colspan="3">
-              <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
-              <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button>
-            </td>
-				</tr>
-			</template>
-    </table>
+
+      <div class="search-table-outter wrapper">
+            <table class="search-table inner">
+
+            <!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
+            <tr></tr>
+            <tr>
+              <template is="dom-repeat" items="{{head}}">
+                <th>{{item}}</th>
+              </template>
+            </tr>
+            <template is="dom-repeat" items="{{results}}">
+              <tr>
+                <td on-tap="showDetailSujet">
+                  <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
+                  <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
+                </td>
+                <td on-tap="showDetailPredicat">
+                  <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
+                  <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
+                </td>
+                <td on-tap="showDetailObjet">
+                  <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
+                  <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
+                </td>
+                </tr>
+                <tr hidden$={{!modifications}}>
+                  <td colspan="3">
+                    <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
+                    <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button>
+                  </td>
+              </tr>
+            </template>
+          </table>
+      </div>
 
     <paper-input label="Requête" value="{{query}}"></paper-input>
       <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>

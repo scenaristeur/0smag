@@ -8,7 +8,7 @@
 <link rel="import" href="redux-store.html">
 
 
-<dom-module id="statement-input">
+<dom-module id="tension-input">
     <template>
         <!--  - [[url]] - [[dataset]] - [[graphe]] -->
             <iron-ajax
@@ -22,15 +22,18 @@
       on-error="ajaxError">
     </iron-ajax>
 
-
-     <paper-input id="statement" label="Un statement" type="text"></paper-input>
+    En holocracie, 
+     <paper-input id="nom" label="une tension" type="text"></paper-input>
+     est un écrat entre
+      <paper-input id="cqe" label="ce qui est" type="text"></paper-input> & 
+      <paper-input id="cqde" label="ce qui devrait être" type="text"></paper-input>
     <paper-toggle-button id="literal" checked>Literal</paper-toggle-button>
-    <paper-button raised on-tap="addStatement">Ajouter un statement</paper-button>
+    <paper-button raised on-tap="addStatement">Ajouter une tension</paper-button>
     </template>
 
     <script>
         Polymer({
-            is: 'statement-input',
+            is: 'tension-input',
             behaviors: [ ReduxBehavior ],
             actions:{
                 add: function(name){
@@ -60,31 +63,36 @@
                     type: String,
                     statePath: 'graphe'
                 },
-               /* tension:{
+                tension:{
                     type: Object,
                     value: {}
-                }*/
+                }
             },
          /*   computedUrl: function(endpoint){
                 return endpoint.url;
             },*/
             addStatement: function() {
-                const statement = this.$.statement;
-                if (statement.value){
+                const nom = this.$.nom;
+                const cqe = this.$.cqe;
+                const cqde = this.$.cqde;
+                if (nom.value){
                     // vers reduxstore
-                    this.dispatch('add', statement.value);
+                   // this.dispatch('add', field.value);
                     // vers sparql endpoint
-                    this.sendUpdate(statement.value);
-                    statement.value = null;
-                    statement.focus();
+                    this.tension.nom = nom.value;
+                    this.tension.cqe = cqe.value;
+                    this.tension.cqde = cqde.value;
+                    this.sendUpdate();
+                    nom.value = null;
+                    nom.focus();
 
                 }
             },
             			/**
     			* Execute la requete
     			*/
-    			sendUpdate: function (value){
-            this.options = this.computeUpdate(value,this.graphe);
+    			sendUpdate: function (){
+            this.options = this.computeUpdate(this.tension,this.graphe);
           	this.$.ajaxupdate.generateRequest();
     			},
 
@@ -108,10 +116,16 @@
             console.log(data.detail.error.message);
             this.result =  data.detail.error.message+"\n"+this.$.ajaxupdate.url;
           },
-            computeUpdate: function(value,graphe){
+            computeUpdate: function(tension,graphe){
             this.urlUpdate = [this.url,this.ds,'update'].join('/');
-            var literal = this.$.literal.checked;
-            var sujet= "S" + new Date().valueOf();
+           // var literal = this.$.literal.checked;
+            var sujet= "T" + new Date().valueOf();
+            var tension = tension;
+            var nom = tension.nom;
+            var cqe = tension.cqe;
+            var cqde = tension.cqde;
+
+
             var propLabel = "rdfs:label";
            /* if (propriete == "type"){
     				      propSend="<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
@@ -125,13 +139,11 @@
                     if (graphe != ""){
                             update += "GRAPH "+graphe+"{ \n";
                     }
-                    if(literal){
-                        value = '"'+value+'"';
-                                update += "smag:"+sujet+"   "+propLabel+"   "+value+" . \n";
-                    }else{
-                                update += "smag:"+sujet+"   "+propLabel+"   smag:"+value+" . \n";
-                    }
-                    update += "smag:"+sujet+"   rdf:type   smag:Statement . \n";
+                    nom = '"'+nom+'"';
+                    update += "smag:"+sujet+"   "+propLabel+"   "+nom+" . \n";
+                    update += 'smag:'+sujet+'   smag:cqe   "'+cqe+'" . \n';
+                    update += 'smag:'+sujet+'   smag:cqde   "'+cqde+'" . \n';
+                    update += 'smag:'+sujet+'   rdf:type    smag:Tension . \n';
 
                     if (graphe != ""){
                                 update += "  } \n";
