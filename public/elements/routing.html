@@ -45,14 +45,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.route = 'home';
     });
 
-    page('/users', function() {
+   /* page('/users', function() {
       app.route = 'users';
     });
 
     page('/users/:name', function(data) {
       app.route = 'user-info';
       app.params = data.params;
-    });
+    });*/
 
     page('/faq', function() {
       app.route = 'faq';
@@ -100,19 +100,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     page('/visualisation', function() {
       app.route = 'visualisation';
     });
-   /* page('/detail/:type/:id', function(data) {
-      app.route = 'detail';
-      app.params = data.params;
-      console.log(app.params);
-    });*/
+
     /*page('/detail/:type/:localName', function(data) {
       app.route = 'detail';
       app.params = data.params;
       console.log(app.params);
     });*/
-    page('/detail', function(data) {
+    page('/detail', function() {
+      app.route = 'detail';
+     // app.params = data.params;
+    //  console.log(app.params);
+    });
+    /*    page('/detail/:node', function(data) {
       app.route = 'detail';
       app.params = data.params;
+      console.log(app.params);
+      console.log(data);
+    });*/
+  /*  page('/search', function(data) {
+  app.route = 'search';
+  app.params = data.querystring;
+});*/
+
+    page('/debug', function(data) {
+      app.route = 'debug';
     //  console.log(app.params);
     });
 

@@ -1,0 +1,95 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="smag-debug">
+  <template>
+  <style include="shared-styles iron-flex iron-flex-alignment">
+
+  :host {
+    display: block;
+  }
+  .container {
+    @apply(--layout-horizontal);
+    @apply(--layout-wrap);
+  }
+  .container > p{
+    /*  padding-left: 8px;*/
+    padding-right: 8px;
+    padding-top: 20px;
+    padding-left: 20px;
+    bottom:0;
+  }
+  </style>
+
+  <h2>Debug</h2>
+  <paper-material elevation="1">
+    <h3>Url endpoint</h3>
+    <a href="{{url}}" target="_blank">{{url}}</a>
+  </paper-material>
+  <paper-material elevation="1">
+    <h3>Dataset</h3>
+    {{ds}}
+  </paper-material>
+  <paper-material elevation="1">
+    <h3>Graphe</h3>
+    {{graphe}}
+  </paper-material>
+  <paper-material elevation="1">
+    <h3>Derniere Requete</h3>
+    {{requete}}
+  </paper-material>
+
+</template>
+
+<script>
+Polymer({
+  is: 'smag-debug',
+  behaviors: [ ReduxBehavior ],
+  /* actions:{
+  add: function(name){
+  return {
+  type: 'ADD_STATEMENT',
+  statement: name
+}
+}
+
+},*/
+properties: {
+  statements: {
+    type: Array,
+    statePath: 'statements'
+  },
+  url: {
+    type: Object,
+    statePath: 'url'
+  },
+  ds: {
+    type: Object,
+    statePath: 'ds'
+  },
+  graphe: {
+    type: Object,
+    statePath: 'graphe'
+  }
+
+},
+/*addStatement: function() {
+const field = this.$.sujetField;
+if (field.value){
+this.dispatch('add', field.value);
+field.value = null;
+field.focus();
+}
+}*/
+});
+
+</script>
+
+</dom-module>

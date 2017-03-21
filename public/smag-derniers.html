@@ -1,0 +1,88 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="redux-store.html">
+
+
+
+<dom-module id="smag-derniers">
+  <template>
+
+    <span on-tap="_showViz"><b>Tout</b> </span>
+    <span hidden$=[[!hasData(derniers)]]>
+      ou derniers noeuds cliqués : <b>
+        <template is="dom-repeat" items="{{derniers}}" as="dernier">
+          <item on-tap="_showDetail" id="{{dernier.value}}">{{afficheLocalName(dernier)}}, </item>
+        </template>
+        <b>
+      </span>
+  </template>
+
+  <script>
+  Polymer({
+    is: 'smag-derniers',
+    behaviors: [ ReduxBehavior ],
+    actions:{
+      setCurrentNode: function(node){
+        return {
+          type: 'SET_CURRENT_NODE',
+          currentNode: node
+        }
+      },
+    },
+    properties: {
+      derniers: {
+        type: Array,
+        statePath: 'derniers'
+      },
+    },
+    setCurrentNode: function(node){
+      const currentNode = node;
+      if (currentNode){
+        this.dispatch('setCurrentNode', currentNode);
+      }
+    },
+    _showDetail: function(e){
+      console.log(e);
+      var node = {}
+      node.value = e.target.id;
+      node.type = "uri";
+
+      this.setCurrentNode(node);
+      console.log(node);
+      // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+      page.redirect("/detail");
+    },
+    _showViz: function(){
+      page.redirect("/visualisation");
+    },
+    afficheLocalName: function(node){
+     // console.log(node);
+      var valSplit ;
+      if(node == undefined){
+        valSplit = this.localName.toUpperCase();
+      }else{
+        if (node.type == "literal"){
+          valSplit = '" '+node.value+' "';
+          /*  if (node.value.startsWith("http://")){
+          valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
+        }*/
+      }else{
+        valSplit = node.value.split("#")[1];
+        if (valSplit == undefined){
+          valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+        }
+      }
+    }
+    return valSplit;
+  },
+  derniersCache: function(){
+    return this.derniers.length > 0 ;
+  },
+  hasData: function (data) {
+    return data.length > 0;
+  }
+});
+
+</script>
+
+</dom-module>

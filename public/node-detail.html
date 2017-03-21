@@ -2,440 +2,530 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/iron-icons/social-icons.html">
+<link rel="import" href="bower_components/iron-icons/image-icons.html">
+<link rel="import" href="bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+
+
+<link rel="import" href="bower_components/social-links/twitter-link.html">
+<link rel="import" href="bower_components/social-links/vimeo-link.html">
+<link rel="import" href="bower_components/social-links/skype-link.html">
+<link rel="import" href="bower_components/social-links/youtube-link.html">
+<link rel="import" href="bower_components/social-links/linkedin-link.html">
+<link rel="import" href="bower_components/social-links/behance-link.html">
+<link rel="import" href="bower_components/social-links/pinterest-link.html">
+<link rel="import" href="bower_components/social-links/facebook-link.html">
+<link rel="import" href="bower_components/social-links/convoo-link.html">
+<link rel="import" href="bower_components/social-links/snapchat-link.html">
+<link rel="import" href="bower_components/social-links/github-link.html">
+<link rel="import" href="bower_components/social-links/instagram-link.html">
+<link rel="import" href="bower_components/social-links/dribbble-link.html">
 
 
 <link rel="import" href="redux-store.html">
 
 
 <dom-module id="node-detail">
-    <template>
-    <style include="shared-styles"></style>
-    <style>
-      :host {
-        display: block;
+  <template>
+  <style include="shared-styles"></style>
+  <style>
+  :host {
+    display: block;
+  }
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    /*  width: 100%;*/
+  }
+
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    /* width: 30%;*/
+    /*  min-width: 200px;*/
+  }
+
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+
+  /* .search-table-outter {border:2px solid red;}*/
+  .search-table{table-layout: fixed; margin:40px auto 0px auto; }
+  .search-table, td, th{border-collapse:collapse; border:1px solid #777;}
+  /*th{padding:20px 7px; font-size:15px; color:#444; background:#66C2E0;}
+  td{padding:5px 10px; height:35px;}*/
+
+  .search-table-outter { overflow-x: scroll; }
+  </style>
+
+  <iron-ajax
+  id="ajaxGet"
+  url="{{urlDetail}}"
+  params="{{options}}"
+  handle-as="json"
+  on-response="handleResponse"
+  on-error="ajaxError"
+  debounce-duration="300">
+</iron-ajax>
+
+<iron-ajax
+id="ajaxChangement"
+url="{{urlChangement}}"
+body="{{optionsModif}}"
+method="POST"
+handle-as="document"
+content-type="application/x-www-form-urlencoded"
+on-response="handleResponseChange"
+on-error="ajaxErrorChange"
+debounce-duration="300">
+</iron-ajax>
+
+<h3>{{localName}} <paper-icon-button icon="social:share" on-tap="_partager" title="Partager"></paper-icon-button></h3>
+<!--
+
+
+  A METTRE PLUS TARD 
+
+
+  <paper-icon-button icon="av:loop" on-tap="_recharger" title="Recharger (change de couleur si une nouvelle info est disponible)"></paper-icon-button>
+<paper-icon-button icon="create" on-tap="_changeNom" title="Modifier ce noeud"></paper-icon-button>
+<paper-icon-button icon="social:person-add" on-tap="_newActor" title="Ajouter un acteur"></paper-icon-button>
+<paper-icon-button icon="maps:add-location" on-tap="_newLocation" title="Ajouter un lieu"></paper-icon-button>
+<paper-icon-button icon="icons:event" on-tap="_newEvent" title="Ajouter un événement"></paper-icon-button>
+-->
+
+<paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
+<paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
+<smag-derniers></smag-derniers>
+<smag-filtre></smag-filtre>
+
+<div class="search-table-outter wrapper">
+  <table class="search-table inner">
+
+    <!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
+    <tr></tr>
+    <tr>
+     <!-- <th></th>-->
+      <!-- PROBLEME CAR PREDICAT ET OBJET ARRIVENT AVANT SUJET
+      <template is="dom-repeat" items="{{head}}">
+      <th>{{item}}</th>
+    </template>-->
+    <th>Sujet</th><th>Predicat</th><th>Objet</th>
+  </tr>
+  <template is="dom-repeat" items="{{results}}">
+    <tr>
+     <!-- <td>
+        <div hidden$={{item.open}}><paper-icon-button icon="lock-open" title="Fermer" item="{{item}}"on-tap="_close"></paper-icon-button></div>
+        <div hidden$={{!item.open}}><paper-icon-button icon="lock-outline" title="Ouvrir" item="{{item}}"on-tap="_open"></paper-icon-button></div>
+      </td>-->
+      <td on-tap="showDetailSujet">
+        <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
+        <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
+      </td>
+      <td on-tap="showDetailPredicat">
+        <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
+        <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
+      </td>
+      <td on-tap="showDetailObjet">
+        <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
+        <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
+      </td>
+    </tr>
+    <tr hidden$={{!modifications}}>
+      <td colspan="4">
+        <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>
+        <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
+        <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
+      </td>
+    </tr>
+  </template>
+</table>
+</div>
+
+<paper-input label="Requête" value="{{query}}"></paper-input>
+<paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
+
+<paper-dialog id="dialog">
+  <h2>Modification</h2>
+  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
+  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
+  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
+  <paper-toggle-button id="literal">Literal</paper-toggle-button>
+  <paper-button  raised  item="{{item}}" on-tap="_sendChangement" >OK</paper-button>
+
+</paper-dialog>
+
+<paper-dialog id="suppDialog">
+  <h2>Suppression</h2>
+  <p>Confirmez vous la suppression du triplet suivant : </p>
+  <p>{{sujetTemp.localName}}</p>
+  <p>{{proprieteTemp.localName}}</p>
+  <p>{{objetTemp.localName}}</p>
+  <paper-button  raised  item="{{item}}" on-tap="_suppTriplet">OK</paper-button>
+</paper-dialog>
+
+<paper-dialog id="share">
+  <h2>Partager</h2>
+
+  <p>{{shareUrl}}</p>
+<twitter-link
+ href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
+<a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{shareUrl}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
+
+<facebook-link href="https://www.facebook.com/sharer/sharer.php?u={{shareUrl}}" height="15px"></facebook-link>
+<!--<vimeo-link href="https://www.vimeo.com/@smag0" height="15px"></vimeo-link>
+<skype-link href="https://www.skype.com/@" height="15px"></skype-link>-->
+<youtube-link href="https://plus.google.com/share?url={{shareUrl}}" height="15px"></youtube-link>
+
+<linkedin-link href="https://www.linkedin.com/shareArticle?mini=true&url={{shareUrl}}&title=La%20r%C3%A9volution%20des%20donn%C3%A9es%20ouvertes&summary=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.&source={{shareUrl}}" height="15px"></linkedin-link>
+<!--<behance-link href="https://www.behance.com/@bkawk" height="15px"></behance-link>-->
+<pinterest-link href="https://pinterest.com/pin/create/button/?url={{shareUrl}}&description=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres." height="15px"></pinterest-link>
+<!--
+<convoo-link href="https://www.convoo.me/@bkawk" height="15px"></convoo-link>
+<snapchat-link href="https://www.snapchat.com/@bkawk" height="15px"></snapchat-link>
+<github-link href="https://www.github.com/@bkawk" height="15px"></github-link>
+<instagram-link href="https://www.instagram.com/@bkawk" height="15px"></instagram-link>
+<dribbble-link href="https://www.dribbble.com/@bkawk" height="15px"></dribbble-link> -->
+  <paper-button  raised on-tap="_closeShare">OK</paper-button>
+</paper-dialog>
+
+</template>
+
+<script>
+Polymer({
+  is: 'node-detail',
+  behaviors: [ ReduxBehavior ],
+  actions:{
+    setCurrentNode: function(node){
+      return {
+        type: 'SET_CURRENT_NODE',
+        currentNode: node
       }
-      table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-      /*  width: 100%;*/
+    },
+    update_nb_maj: function(nb){
+      return {
+        type: 'UPDATE_NB_MAJ',
+        nb: nb
       }
-
-      td, th {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-       /* width: 30%;*/
-      /*  min-width: 200px;*/
+    }
+  },
+  properties: {
+    currentNode:{
+      type: Object,
+      statePath: 'currentNode',
+      observer: 'updateDetail'
+    },
+    localName:{
+      type: String,
+      computed: 'computeLocalName(currentNode)'
+    },
+    url:{
+      type: Object,
+      statePath: 'url'
+    },
+    ds:{
+      type: String,
+      statePath: 'ds'
+    },
+    graphe: {
+      type: String,
+      statePath: 'graphe'
+    },
+    urlDetail:{
+      type: String,
+      //  computed: 'computeUrlDetail(url,ds,action)'
+    },
+    options: {
+      //  computed: 'computedOptions(graphe,limite,output)'
+    },
+    limite : {
+      value: 100,
+      notify: true
+    },
+    output : {
+      value: 'json',
+      notify: true
+    },
+    nb:{
+      type: Number,
+      statePath: 'nb',
+      observer: '_nbChanged'
+    },
+  },
+  isEmptyObject: function(obj) {
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        return false;
       }
-
-      tr:nth-child(even) {
-        background-color: #dddddd;
+    }
+    return true;
+  },
+  computeLocalName: function(node){
+    if (!this.isEmptyObject(node)){
+      var type = node.type;
+      var prefix = node.value.split("#")[0];
+      var localName =  node.value.split("#")[1];
+      if (localName == undefined){
+        prefix = node.value.substring(0, node.value.lastIndexOf("/") + 1);
+        localName = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+      }else{
+        prefix = prefix+"#";
       }
+      return localName.toUpperCase();
+    }else{
+      return "Page introuvable";
+    }
+  },
+  computeUrlDetail: function(url,ds,action){
+    return [url,ds,action].join('/');
+  },
+  updateDetail: function(){
+    if(this.url != undefined){
+      this.action = "query";
+      this.urlDetail = this.computeUrlDetail(this.url,this.ds,this.action);
+      this.options = this.computedOptions(this.graphe,this.limite,this.output)
+    //  console.log(this.urlDetail);
+    //  console.log(this.options);
+      this.$.ajaxGet.generateRequest();
+    }
+  },
+  computedOptions: function(graphe,limite,output){
+    if (graphe != ""){
+      this.query = 'SELECT * FROM '+graphe+' WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
+    }else{
+      this.query = 'SELECT * WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
+    }
+    var queryLimite=this.query+" LIMIT "+limite;
+    //console.log(queryLimite);
+    return{query: queryLimite, output: output};
+  },
+  /* Recuperation de la reponse */
+  handleResponse:function(data){
 
-     /* .search-table-outter {border:2px solid red;}*/
-.search-table{table-layout: fixed; margin:40px auto 0px auto; }
-.search-table, td, th{border-collapse:collapse; border:1px solid #777;}
-/*th{padding:20px 7px; font-size:15px; color:#444; background:#66C2E0;}
-td{padding:5px 10px; height:35px;}*/
+    this.head=data.detail.response.head.vars;
+    this.results=data.detail.response.results.bindings;
+    console.log(this.results);
+  },
 
-.search-table-outter { overflow-x: scroll; }
-    </style>
+  /**
+  * en cas d'erreur de la requete
+  */
+  ajaxError : function(data){
+    console.log(data);
+    console.log(data.detail.response);
+    console.log(data.detail.error);
+    console.log(data.detail.error.message);
+  },
+  afficheLocalName: function(node){
+    var valSplit ;
+    if(node == undefined){
+      valSplit = this.localName.toUpperCase();
+    }else{
+      if (node.type == "literal"){
+        valSplit = '" '+node.value+' "';
+        /*  if (node.value.startsWith("http://")){
+        valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
+      }*/
+    }else{
+      valSplit = node.value.split("#")[1];
+      if (valSplit == undefined){
+        valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+      }
+    }
+  }
+  return valSplit;
+},
+showDetailSujet: function(e){
+  var sujet = e.model.item.Sujet;
+  this.showDetail(sujet);
+},
+showDetailPredicat: function(e){
+  var predicat = e.model.item.Predicat;
+  this.showDetail(predicat);
+},
+showDetailObjet: function(e){
+  var objet = e.model.item.Objet;
+  this.showDetail(objet);
+},
+showDetail: function(node){
+  this.setCurrentNode(node);
+  // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+  page.redirect("/detail");
+},
+setCurrentNode: function(node){
+  const currentNode = node;
+  if (currentNode){
+    this.dispatch('setCurrentNode', currentNode);
+  }
+},
+/* SUPPRESSION D'UN TRIPLET*/
+_supp(e,detail){
+  var item = e.model.item;
+  this.sujetTemp = this.splitDecompose(item.Sujet);
+  this.proprieteTemp = this.splitDecompose(item.Predicat);
+  this.objetTemp = this.splitDecompose(item.Objet);
+  this.$.suppDialog.toggle();
+},
+_suppTriplet: function(){
+  var oldObjetType = this.objetTemp.type;
+  var oldSujetUri = this.sujetTemp.uri;
+  var oldPropUri = this.proprieteTemp.uri;
+  var oldObjUri = this.objetTemp.uri;
+  var query = '';
+  if (this.graphe != ""){
+    query+= 'WITH '+this.graphe+'\n';
+  }
+  query += 'DELETE \n';
+  if (oldObjetType !="literal"){
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+  }else{
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+  }
+  query += 'WHERE\n';
+  if (oldObjetType !="literal"){
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+  }else{
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+  }
+  this.urlChangement = this.computeUrlDetail(this.url,this.ds,'update');
+  this.query = query;
+  this.optionsModif = {};
+  this.optionsModif.update=query;
+  console.log(this.query);
+  console.log(this.$.ajaxChangement);
+  this.$.ajaxChangement.generateRequest();
+  this.$.suppDialog.toggle();
 
-      <iron-ajax
-        id="ajaxGet"
-        url="{{urlDetail}}"
-        params="{{options}}"
-        handle-as="json"
-        on-response="handleResponse"
-        on-error="ajaxError"
-        debounce-duration="300">
-      </iron-ajax>
+},
+/* MODIFICATION D'UN TRIPLET */
+_modif(e,detail){
+  //          console.log(e.model.item);
+  var item = e.model.item;
+  this.sujetTemp = this.splitDecompose(item.Sujet);
+  this.proprieteTemp = this.splitDecompose(item.Predicat);
+  this.objetTemp = this.splitDecompose(item.Objet);
+  this.$.dialog.toggle();
+},
+_sendChangement: function(){
+  //          console.log(this.objetTemp.type);
 
-      <iron-ajax
-      id="ajaxChangement"
-      url="{{urlChangement}}"
-      body="{{optionsModif}}"
-      method="POST"
-      handle-as="document"
-      content-type="application/x-www-form-urlencoded"
-      on-response="handleResponseChange"
-      on-error="ajaxErrorChange">
-    </iron-ajax>
+  var oldSujetUri = this.sujetTemp.uri;
+  var oldPropUri = this.proprieteTemp.uri;
+  var oldObjUri = this.objetTemp.uri;
+  var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
+  var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
+  var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
+  var oldObjetType = this.objetTemp.type;
+  var newObjLiteral =  this.$.literal.checked;
 
-            <h3>{{localName}}</h3>
-         <!-- <h3>Nous avons [[statementCount]] statements.</h3>
-        [[url]][[ds]][[graphe]]-->
+  // MODIFICATION D'UN TRIPLET
+  var query = '';
+  if (this.graphe != ""){
+    query = 'WITH '+this.graphe+'\n';
+  }
+  query += 'DELETE \n';
+  if (oldObjetType == "uri"){
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+  }else{
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+  }
+  query += 'INSERT \n';
+  if (!newObjLiteral){
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
+  }else{
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
+  }
+  query += 'WHERE\n';
+  if (oldObjetType == "uri"){
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+  }
+  else{
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+  }
+  this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
+  this.query = query;
+  this.optionsModif = {};
+  this.optionsModif.update=query;
+  console.log(this.query);
+  console.log(this.$.ajaxChangement);
+  this.$.ajaxChangement.generateRequest();
+  this.$.dialog.toggle();
+},
+/**
+* recupere et parse la reponse du serveur
+*/
+handleResponseChange: function(data){
+  console.log(data);
+  var html=data.detail.response.getElementsByTagName("html")[0];
+  var body=html.getElementsByTagName("body")[0];
+  var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
+  this.result=resultat;
+  console.log(this.result);
+  var nb=this.nb+1;
+  this.dispatch('update_nb_maj', nb);
+},
+/**
+* en cas d'erreur de la requete
+*/
+ajaxErrorChange : function(data){
+  console.log(data.detail.error.message);
+  console.log(this.$.ajaxGet.url);
+  console.log(this.$.ajaxGet.options);
+},
+splitDecompose: function(binding){
+  var binding = binding;
+  var result = {};
+  if (binding == undefined){
+    binding = this.currentNode;
+  }
+  var type = binding.type;
+  var prefix = binding.value.split("#")[0];
+  var localName =  binding.value.split("#")[1];
+  if (localName == undefined){
+    prefix = binding.value.substring(0, binding.value.lastIndexOf("/") + 1);
+    localName = binding.value.substring(binding.value.lastIndexOf("/") + 1, binding.value.length);
+  }else{
+    prefix = prefix+"#";
+  }
+  result.uri = binding.value;
+  result.type = type;
+  result.prefix= prefix;
+  result.localName = localName;
 
-              <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
-              <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
-    <div class="search-table-outter wrapper">
-        <table class="search-table inner">
+  console.log(result);
+  return result;
+},
+_nbChanged : function(){
+  if (this.urlDetail != undefined){
+    this.$.ajaxGet.generateRequest();
+  }
+},
 
-    			<!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
-            <tr></tr>
-    			<tr>
-    				<template is="dom-repeat" items="{{head}}">
-    					<th>{{item}}</th>
-    				</template>
-    			</tr>
-    			<template is="dom-repeat" items="{{results}}">
-            <tr>
-              <td on-tap="showDetailSujet">
-                <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
-                <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
-              </td>
-              <td on-tap="showDetailPredicat">
-                <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
-                <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
-              </td>
-              <td on-tap="showDetailObjet">
-                <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-                <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-              </td>
-              </tr>
-              <tr hidden$={{!modifications}}>
-                <td colspan="3">
-                  <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
-                  <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button>
-                </td>
-    				</tr>
-    			</template>
-        </table>
-    </div>
+//FONCTIONS LANCEES PAR DES EVENEMENTS UTILISATEUR
+_recharger: function(){
+  this.$.ajaxGet.generateRequest();
+},
+_partager: function(){
+  console.log(this.currentNode);
+ // this.shareUrl = this.currentNode.value;
+ var node = this.currentNode;
+ var valSplit = node.value.split("#")[1];
+      if (valSplit == undefined){
+        valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+      }
+      this.valSplit = valSplit;
+ this.shareUrl = "http://"+window.location.host+"/?search="+valSplit;
+    this.$.share.toggle();
+},
+_closeShare: function(){
+    this.$.share.toggle();
+}
 
-        <paper-input label="Requête" value="{{query}}"></paper-input>
-        <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
+});
 
-        <paper-dialog id="dialog">
-          <h2>Modification</h2>
-          <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
-          <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
-          <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
-          <paper-toggle-button id="literal">Literal</paper-toggle-button>
-          <paper-button item="{{item}}" raised on-tap="_sendChangement">OK</paper-button>
-        </paper-dialog>
-
-        <paper-dialog id="suppDialog">
-          <h2>Suppression</h2>
-          <p>Confirmez vous la suppression du triplet suivant : </p>
-          <p>{{sujetTemp.localName}}</p>
-          <p>{{proprieteTemp.localName}}</p>
-          <p>{{objetTemp.localName}}</p>
-          <paper-button item="{{item}}" raised on-tap="_suppTriplet">OK</paper-button>
-        </paper-dialog>
-
-    </template>
-
-    <script>
-        Polymer({
-            is: 'node-detail',
-            behaviors: [ ReduxBehavior ],
-            actions:{
-              setCurrentNode: function(node){
-                return {
-                  type: 'SET_CURRENT_NODE',
-                  currentNode: node
-                }
-              },
-              update_nb_maj: function(nb){
-                return {
-                  type: 'UPDATE_NB_MAJ',
-                  nb: nb
-                  }
-                }
-            },
-            properties: {
-                currentNode:{
-                    type: Object,
-                    statePath: 'currentNode',
-                    observer: 'updateDetail'
-                },
-                localName:{
-                    type: String,
-                    computed: 'computeLocalName(currentNode)'
-                },
-                url:{
-                    type: Object,
-                    statePath: 'url'
-                },
-                ds:{
-                  type: String,
-                  statePath: 'ds'
-                },
-                graphe: {
-                  type: String,
-                  statePath: 'graphe'
-                },
-                urlDetail:{
-                  type: String,
-                //  computed: 'computeUrlDetail(url,ds,action)'
-                },
-                options: {
-                //  computed: 'computedOptions(graphe,limite,output)'
-                },
-                limite : {
-                  value: 100,
-                  notify: true
-                },
-                output : {
-                  value: 'json',
-                  notify: true
-                },
-                nb:{
-                  type: Number,
-                  statePath: 'nb',
-                  observer: '_nbChanged'
-                },
-            },
-            isEmptyObject: function(obj) {
-            for (var key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                return false;
-                }
-            }
-            return true;
-            },
-            computeLocalName: function(node){
-                if (!this.isEmptyObject(node)){
-                var type = node.type;
-                var prefix = node.value.split("#")[0];
-                var localName =  node.value.split("#")[1];
-                if (localName == undefined){
-                    prefix = node.value.substring(0, node.value.lastIndexOf("/") + 1);
-                    localName = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
-                }else{
-                    prefix = prefix+"#";
-                }
-                    return localName.toUpperCase();
-                }else{
-                    return "Page introuvable";
-                }
-            },
-            computeUrlDetail: function(url,ds,action){
-              console.log(url);
-              console.log(ds);
-              console.log(action);
-              return [url,ds,action].join('/');
-            },
-            updateDetail: function(){
-              console.log("update detail");
-              console.log(this.currentNode);
-              if(this.url != undefined){
-              this.urlDetail = this.computeUrlDetail(this.url,this.ds,this.action);
-              this.options = this.computedOptions(this.graphe,this.limite,this.output)
-              console.log(this.urlDetail);
-              console.log(this.options);
-              this.$.ajaxGet.generateRequest();
-            }
-            },
-            computedOptions: function(graphe,limite,output){
-              if (graphe != ""){
-
-                this.query = 'SELECT * FROM '+graphe+' WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
-              }else{
-                this.query = 'SELECT * WHERE {?Sujet ?Predicat ?Objet}'
-              }
-              var queryLimite=this.query+" LIMIT "+limite;
-              console.log(queryLimite);
-              return{query: queryLimite, output: output};
-            },
-            /* Recuperation de la reponse */
-            handleResponse:function(data){
-
-              this.head=data.detail.response.head.vars;
-              this.results=data.detail.response.results.bindings;
-              console.log(this.results);
-            },
-
-            /**
-            * en cas d'erreur de la requete
-            */
-            ajaxError : function(data){
-              console.log(data);
-              console.log(data.detail.response);
-              console.log(data.detail.error);
-              console.log(data.detail.error.message);
-            },
-            afficheLocalName: function(node){
-              var valSplit ;
-              if(node == undefined){
-                valSplit = this.localName.toUpperCase();
-              }else{
-                if (node.type == "literal"){
-                  valSplit = '" '+node.value+' "';
-                /*  if (node.value.startsWith("http://")){
-                    valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
-                  }*/
-                }else{
-                  valSplit = node.value.split("#")[1];
-                  if (valSplit == undefined){
-                    valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
-                  }
-                }
-              }
-              return valSplit;
-            },
-            showDetailSujet: function(e){
-              var sujet = e.model.item.Sujet;
-              this.showDetail(sujet);
-            },
-            showDetailPredicat: function(e){
-              var predicat = e.model.item.Predicat;
-              this.showDetail(predicat);
-            },
-            showDetailObjet: function(e){
-              var objet = e.model.item.Objet;
-              this.showDetail(objet);
-            },
-            showDetail: function(node){
-              this.setCurrentNode(node);
-             // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
-              page.redirect("/detail");
-            },
-            setCurrentNode: function(node){
-              const currentNode = node;
-              if (currentNode){
-                this.dispatch('setCurrentNode', currentNode);
-             }
-            },
-            /* SUPPRESSION D'UN TRIPLET*/
-            _supp(e,detail){
-              var item = e.model.item;
-              this.sujetTemp = this.splitDecompose(item.Sujet);
-              this.proprieteTemp = this.splitDecompose(item.Predicat);
-              this.objetTemp = this.splitDecompose(item.Objet);
-              this.$.suppDialog.toggle();
-            },
-            _suppTriplet: function(){
-              var oldObjetType = this.objetTemp.type;
-              var oldSujetUri = this.sujetTemp.uri;
-              var oldPropUri = this.proprieteTemp.uri;
-              var oldObjUri = this.objetTemp.uri;
-              var query = 'WITH '+this.graphe+'\n';
-              query += 'DELETE \n';
-              if (oldObjetType !="literal"){
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-              }else{
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-              }
-              query += 'WHERE\n';
-              if (oldObjetType !="literal"){
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-              }else{
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-              }
-              this.urlChangement = this.computeUrlDetail(this.url,this.ds,'update');
-              this.query = query;
-              this.optionsModif = {};
-              this.optionsModif.update=query;
-              console.log(this.query);
-              console.log(this.$.ajaxChangement);
-              this.$.ajaxChangement.generateRequest();
-              this.$.suppDialog.toggle();
-
-            },
-    /* MODIFICATION D'UN TRIPLET */
-            _modif(e,detail){
-    //          console.log(e.model.item);
-              var item = e.model.item;
-              this.sujetTemp = this.splitDecompose(item.Sujet);
-              this.proprieteTemp = this.splitDecompose(item.Predicat);
-              this.objetTemp = this.splitDecompose(item.Objet);
-              this.$.dialog.toggle();
-            },
-            _sendChangement: function(){
-    //          console.log(this.objetTemp.type);
-
-              var oldSujetUri = this.sujetTemp.uri;
-              var oldPropUri = this.proprieteTemp.uri;
-              var oldObjUri = this.objetTemp.uri;
-              var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
-              var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
-              var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
-              var oldObjetType = this.objetTemp.type;
-              var newObjLiteral =  this.$.literal.checked;
-
-    // MODIFICATION D'UN TRIPLET avec graphe
-              var query = 'WITH '+this.graphe+'\n';
-              query += 'DELETE \n';
-              if (oldObjetType == "uri"){
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-              }else{
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-              }
-              query += 'INSERT \n';
-              if (!newObjLiteral){
-                query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
-              }else{
-                query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
-              }
-              query += 'WHERE\n';
-              if (oldObjetType == "uri"){
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-              }
-              else{
-                query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-              }
-              this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
-              this.query = query;
-              this.optionsModif = {};
-              this.optionsModif.update=query;
-              console.log(this.query);
-              console.log(this.$.ajaxChangement);
-              this.$.ajaxChangement.generateRequest();
-              this.$.dialog.toggle();
-            },
-            /**
-            * recupere et parse la reponse du serveur
-            */
-            handleResponseChange: function(data){
-                      console.log(data);
-              var html=data.detail.response.getElementsByTagName("html")[0];
-              var body=html.getElementsByTagName("body")[0];
-              var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
-              this.result=resultat;
-              console.log(this.result);
-              var nb=this.nb+1;
-              this.dispatch('update_nb_maj', nb);
-            },
-            /**
-            * en cas d'erreur de la requete
-            */
-            ajaxErrorChange : function(data){
-              console.log(data.detail.error.message);
-              console.log(this.$.ajaxGet.url);
-              console.log(this.$.ajaxGet.options);
-            },
-            splitDecompose: function(binding){
-              var binding = binding;
-              var result = {};
-              if (binding == undefined){
-                binding = this.currentNode;
-              }
-              var type = binding.type;
-              var prefix = binding.value.split("#")[0];
-              var localName =  binding.value.split("#")[1];
-              if (localName == undefined){
-                prefix = binding.value.substring(0, binding.value.lastIndexOf("/") + 1);
-                localName = binding.value.substring(binding.value.lastIndexOf("/") + 1, binding.value.length);
-              }else{
-                prefix = prefix+"#";
-              }
-              result.uri = binding.value;
-              result.type = type;
-              result.prefix= prefix;
-              result.localName = localName;
-
-            console.log(result);
-              return result;
-            },
-            _nbChanged : function(){
-              if (this.urlDetail != undefined){
-                this.$.ajaxGet.generateRequest();
-              }
-            },
-        });
-
-    </script>
+</script>
 
 </dom-module>

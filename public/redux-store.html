@@ -3,58 +3,113 @@
 
 <script>
 
+/* Configuration par défaut en prod
+url: "https://rdf-smag0.rhcloud.com",
+ds: "ds",
+graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
+*/
+/* developpement et tests en local
+url: "http://127.0.0.1:3030",
+ds: "test",
+graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
+*/
 
-    const initialState = {
-        statements: [],
-        url:"http://127.0.0.1:3030",
-        ds: "test",
-        graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
-        currentNode: {},
-        nb: 0
-    };
+const initialState = {
+  statements: [],
+  url: "http://127.0.0.1:3030",
+  ds: "test",
+  graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
+  currentNode: {},
+  nb: 0,
+  objets: ["Chose", "Projet", "Environnement", "Acteur", "Compétence", "Organisation", "Rôle", "Action", "Evénement", "Etape", "Autre"],
+  proprietes: ["type", "label", "hasPart", "isPartOf", "subClassOf", "sameAs", "Autre"],
+  lang: ["fr"],
+  derniers: [],
+  longueurDerniers: 9
+};
 
-
-
-    const reducer = (state, action) => {
-        if (!state) return initialState;
-        switch (action.type) {
-            case 'ADD_STATEMENT':
-                const statements = state.statements.slice(0);
-                statements.push(action.statement);
-                return Object.assign({}, state, { statements: statements });
-                break;
-            case 'UPDATE_NB_MAJ':
-                var nb = action.nb;
-                return Object.assign({}, state, { nb: nb });
-                break;
-            case 'UPDATE_PARAMETRES':
-                var url = action.url;
-                var ds = action.ds;
-                var graphe = action.graphe;
-                return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
-                break;
-            case 'SET_CURRENT_NODE':
-                console.log(action);
-                var currentNode = state.currentNode;
-                currentNode = action.currentNode;
-                return Object.assign({},state, {currentNode: currentNode});
-                break;
-            case 'RESET_PARAMETRES':
-                var  url = "http://127.0.0.1:3030";
-                var ds = "test";
-                var graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
-                return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
-                break;
-            default:
-                console.log("reducer ne connait pas cette action");
-        }
-
-    };
+/* DEBUT a virer dans une autre page avec une action */
+console.log(window.location.search);
+if ((window.location.hostname != "127.0.0.1") && (window.location.hostname != "localhost")){
+initialState.url =  "https://rdf-smag0.rhcloud.com";
+initialState.ds = "ds";
+initialState.graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+}
 
 
 
-    const store = Redux.createStore(reducer);
-    const ReduxBehavior = PolymerRedux(store);
+
+console.log(initialState);
+/* FIN A VIRER DANS UNE AUTRE PAGE */
+
+
+
+const reducer = (state, action) => {
+  if (!state) return initialState;
+  switch (action.type) {
+    case 'ADD_STATEMENT':
+    const statements = state.statements.slice(0);
+    statements.push(action.statement);
+    return Object.assign({}, state, { statements: statements });
+    break;
+    case 'UPDATE_NB_MAJ':
+    var nb = action.nb;
+    return Object.assign({}, state, { nb: nb });
+    break;
+    case 'UPDATE_PARAMETRES':
+    var url = action.url;
+    var ds = action.ds;
+    var graphe = action.graphe;
+    return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
+    break;
+    case 'SET_CURRENT_NODE':
+    console.log(action);
+    var currentNode = state.currentNode;
+    currentNode = action.currentNode;
+    const derniers = state.derniers.slice(0);
+    if( derniers.indexOf(action.currentNode) < 0 ){
+      derniers.unshift(action.currentNode);
+    }
+    if (derniers.length > state.longueurDerniers){
+      derniers.pop();
+    }
+    return Object.assign({},state, {currentNode: currentNode, derniers: derniers});
+    break;
+    case 'SET_SERVEUR':
+    const serveur = action.serveur;
+    var url ="";
+    var ds = "";
+    var graphe = "";
+    if (serveur == "local"){
+      console.log(window.location.hostname);
+      url = "http://"+window.location.hostname+":3030";
+      ds = "test";
+      graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+    }else if (serveur == "rdf" ) {
+      url = "https://rdf-smag0.rhcloud.com";
+      ds = "ds";
+      graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+    }
+    else if (serveur == "fuseki" ) {
+      url = "https://fuseki-smag0.rhcloud.com";
+      ds = "ds";
+      graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+    }
+    console.log(url);
+    console.log(ds);
+    console.log(graphe);
+    return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
+    break;
+    default:
+    console.log("reducer ne connait pas cette action");
+  }
+
+};
+
+
+
+const store = Redux.createStore(reducer);
+const ReduxBehavior = PolymerRedux(store);
 
 
 </script>

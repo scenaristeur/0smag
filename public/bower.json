@@ -52,7 +52,8 @@
     "sinonjs": "^1.14.1",
     "stacky": "^1.3.0",
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
-    "web-component-tester": "*"
+    "web-component-tester": "*",
+    "social-links": "convoo/social-links#^0.0.2"
   },
   "resolutions": {
     "chai": "^3.2.0",
