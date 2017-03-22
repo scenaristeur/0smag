@@ -84,6 +84,7 @@ debounce-duration="300">
 </iron-ajax>
 
 <h3>{{localName}} <paper-icon-button icon="social:share" on-tap="_partager" title="Partager"></paper-icon-button></h3>
+<paper-icon-button icon="create" on-tap="_openAdd" item="{{currentNode}}" title="Modifier ce noeud"></paper-icon-button>
 <!--
 
 
@@ -113,7 +114,7 @@ debounce-duration="300">
       <template is="dom-repeat" items="{{head}}">
       <th>{{item}}</th>
     </template>-->
-    <th>Sujet</th><th>Predicat</th><th>Objet</th>
+    <th>Sujet </th><th>Predicat</th><th>Objet</th>
   </tr>
   <template is="dom-repeat" items="{{results}}">
     <tr>
@@ -148,6 +149,15 @@ debounce-duration="300">
 <paper-input label="Requête" value="{{query}}"></paper-input>
 <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
 
+<paper-dialog id="addDialog">
+  <h2>Ajout d'une information</h2>
+  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
+  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
+  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
+  <paper-toggle-button id="literal">Literal</paper-toggle-button>
+  <paper-button  raised  item="{{item}}" on-tap="_addTriplet" >OK</paper-button>
+</paper-dialog>
+
 <paper-dialog id="dialog">
   <h2>Modification</h2>
   <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
@@ -155,7 +165,6 @@ debounce-duration="300">
   <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
   <paper-toggle-button id="literal">Literal</paper-toggle-button>
   <paper-button  raised  item="{{item}}" on-tap="_sendChangement" >OK</paper-button>
-
 </paper-dialog>
 
 <paper-dialog id="suppDialog">
@@ -522,7 +531,82 @@ _partager: function(){
 },
 _closeShare: function(){
     this.$.share.toggle();
-}
+},
+_openAdd: function(item){
+//var item = e.model.item;
+console.log(item);
+  this.sujetTemp = this.splitDecompose(item.Sujet);
+  this.proprieteTemp = this.splitDecompose(item.Predicat);
+  this.objetTemp = this.splitDecompose(item.Objet);
+
+
+
+  this.$.addDialog.toggle();
+},
+
+_addTriplet: function(){
+  //          console.log(this.objetTemp.type);
+
+  var oldSujetUri = this.sujetTemp.uri;
+  var oldPropUri = this.proprieteTemp.uri;
+  var oldObjUri = this.objetTemp.uri;
+  var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
+  var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
+  var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
+  var oldObjetType = this.objetTemp.type;
+  var newObjLiteral =  this.$.literal.checked;
+
+  // MODIFICATION D'UN TRIPLET
+ /* var query = '';
+  if (this.graphe != ""){
+    query = 'WITH '+this.graphe+'\n';
+  }*/
+ // query += 'DELETE \n';
+ // if (oldObjetType == "uri"){
+ //   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+ // }else{
+ //   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+ // }
+  /*query += 'INSERT \n';
+  if (!newObjLiteral){
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
+  }else{
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
+  }*/
+ /* query += 'WHERE\n';
+  if (oldObjetType == "uri"){
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+  }
+  else{
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+  }*/
+        var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+      update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+      update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+      update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+      update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
+      update += "INSERT DATA { \n";
+      if (this.graphe != ""){
+        update += "GRAPH "+this.graphe+"{ \n";
+      }
+  if (!newObjLiteral){
+    update += '<'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> \n';
+  }else{
+    update += ' <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" \n';
+  }
+      if (this.graphe != ""){
+        update += "  } \n";
+      }
+      update += "  } \n";
+  this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
+  this.query = update;
+  this.optionsModif = {};
+  this.optionsModif.update=update;
+  console.log(this.query);
+  console.log(this.$.ajaxChangement);
+  this.$.ajaxChangement.generateRequest();
+  this.$.addDialog.toggle();
+},
 
 });
 
