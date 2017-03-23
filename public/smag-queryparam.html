@@ -18,22 +18,11 @@
       },
     },
     properties: {
-      statements: {
-        type: Array,
-        statePath: 'statements'
-      },
-      statementCount: {
-        type: Number,
-        computed: 'computedStatementCount(statements)'
-      },
       oParametre: {
         type: Object,
         value: {},
         observer: ''
       }
-    },
-    computedStatementCount: function(statements) {
-      return statements.length;
     },
         setCurrentNode: function(node){
       const currentNode = node;

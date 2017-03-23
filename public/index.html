@@ -77,6 +77,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="node-detail.html">
   <link rel="import" href="smag-debug.html">
    <link rel="import" href="smag-queryparam.html">
+      <link rel="import" href="smag-search.html">
 
   <!--  <script src="scripts/trace.js"></script> -->
 
@@ -181,7 +182,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Toolbar icons -->
     <paper-icon-button icon="refresh"></paper-icon-button>
-    <paper-icon-button icon="search"></paper-icon-button>
+
+    <smag-search></smag-search>
 
     <!-- Application name -->
     <div class="middle middle-container center horizontal layout">
@@ -190,6 +192,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Application sub title -->
     <div class="bottom bottom-container center horizontal layout">
+       <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
       <div class="bottom-title paper-font-subhead">Système Multi-Agents Global v0</div>
       <!--  <paper-toggle-button  class="bottom-title paper-font-subhead" checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
       <paper-toggle-button  class="bottom-title paper-font-subhead" checked="{{modifications}}">Avec Modifications</paper-toggle-button>
@@ -405,6 +408,8 @@ this software without specific prior written permission.</li>
 <paper-toast id="toast">
   <span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">Ok</span>
 </paper-toast>
+
+
 
 </template>
 

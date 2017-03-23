@@ -283,7 +283,7 @@ Polymer({
       }else{
         prefix = prefix+"#";
       }
-      return localName.toUpperCase();
+      return localName; //.toUpperCase();
     }else{
       return "Page introuvable";
     }
@@ -331,7 +331,7 @@ Polymer({
   afficheLocalName: function(node){
     var valSplit ;
     if(node == undefined){
-      valSplit = this.localName.toUpperCase();
+      valSplit = this.localName; //.toUpperCase();
     }else{
       if (node.type == "literal"){
         valSplit = '" '+node.value+' "';
@@ -526,7 +526,7 @@ _partager: function(){
         valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
       }
       this.valSplit = valSplit;
- this.shareUrl = "http://"+window.location.host+"/?search="+valSplit;
+ this.shareUrl = "http://"+window.location.host+"/%3Fsearch="+valSplit;
     this.$.share.toggle();
 },
 _closeShare: function(){
