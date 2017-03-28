@@ -1,0 +1,33 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="smag-vocabulaires">
+  <template>
+    <h3>Nous avons [[statementCount]] smag vocabulaires.</h3>
+    [[vocabulaires]]
+  </template>
+
+  <script>
+  Polymer({
+    is: 'smag-vocabulaires',
+    behaviors: [ ReduxBehavior ],
+    properties: {
+      vocabulaires: {
+        type: Object,
+        statePath: 'vocabulaires'
+      },
+      statementCount: {
+        type: Number,
+        computed: 'computedStatementCount(statements)'
+      }
+    },
+    computedStatementCount: function(statements) {
+      return statements.length;
+    }
+  });
+
+  </script>
+
+</dom-module>

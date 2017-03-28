@@ -7,7 +7,6 @@
 <link rel="import" href="bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="bower_components/iron-icons/av-icons.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
 
 
 <link rel="import" href="bower_components/social-links/twitter-link.html">
@@ -26,8 +25,6 @@
 
 
 <link rel="import" href="redux-store.html">
-<link rel="import" href="smag-projet.html">
-<link rel="import" href="smag-personne.html">
 
 
 <dom-module id="node-detail">
@@ -86,45 +83,24 @@ on-error="ajaxErrorChange"
 debounce-duration="300">
 </iron-ajax>
 
-<h3>{{localName}} <paper-icon-button icon="social:share" on-tap="_partager" title="Partager"></paper-icon-button>
-  <!--<template is="dom-repeat" items="{{vues}}" as="vue">
-  <div> {{afficheLocalName(vue)}}
-</div>
-</template>-->
+<h3>{{localName}} <paper-icon-button icon="social:share" on-tap="_partager" title="Partager"></paper-icon-button></h3>
 <paper-icon-button icon="create" on-tap="_openAdd" item="{{currentNode}}" title="Modifier ce noeud"></paper-icon-button>
-
-<!--A mettre en place si plusieurs vues <paper-dropdown-menu label="Vue" hidden$={{!showListVue}} style="width:20em">-->
-  <paper-dropdown-menu label="Vue"  style="width:20em">
-  <paper-listbox class="dropdown-content" id="vueListBox" style="width:20em" on-iron-select="_vueSelected" > <!--selected="1"-->
-    <template is="dom-repeat" items="[[vues]]" as="vue">
-      <paper-item id={{vue.value}}>{{afficheLocalName(vue)}}</paper-item>
-    </template>
-  </paper-listbox>
-</paper-dropdown-menu>
-</h3>
-
-
-
 <!--
-A METTRE PLUS TARD
 
 
-<paper-icon-button icon="av:loop" on-tap="_recharger" title="Recharger (change de couleur si une nouvelle info est disponible)"></paper-icon-button>
+  A METTRE PLUS TARD 
+
+
+  <paper-icon-button icon="av:loop" on-tap="_recharger" title="Recharger (change de couleur si une nouvelle info est disponible)"></paper-icon-button>
 <paper-icon-button icon="create" on-tap="_changeNom" title="Modifier ce noeud"></paper-icon-button>
 <paper-icon-button icon="social:person-add" on-tap="_newActor" title="Ajouter un acteur"></paper-icon-button>
 <paper-icon-button icon="maps:add-location" on-tap="_newLocation" title="Ajouter un lieu"></paper-icon-button>
 <paper-icon-button icon="icons:event" on-tap="_newEvent" title="Ajouter un événement"></paper-icon-button>
 -->
 
-
-<smag-projet hidden$={{!showProjetVue}}></smag-projet>
-<smag-personne ></smag-personne>
-<!-- hidden$={{!showPersonneVue}}-->
-
-
 <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
 <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
-
+<smag-derniers></smag-derniers>
 <smag-filtre></smag-filtre>
 
 <div class="search-table-outter wrapper">
@@ -133,7 +109,7 @@ A METTRE PLUS TARD
     <!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
     <tr></tr>
     <tr>
-      <!-- <th></th>-->
+     <!-- <th></th>-->
       <!-- PROBLEME CAR PREDICAT ET OBJET ARRIVENT AVANT SUJET
       <template is="dom-repeat" items="{{head}}">
       <th>{{item}}</th>
@@ -142,31 +118,31 @@ A METTRE PLUS TARD
   </tr>
   <template is="dom-repeat" items="{{results}}">
     <tr>
-      <!-- <td>
-      <div hidden$={{item.open}}><paper-icon-button icon="lock-open" title="Fermer" item="{{item}}"on-tap="_close"></paper-icon-button></div>
-      <div hidden$={{!item.open}}><paper-icon-button icon="lock-outline" title="Ouvrir" item="{{item}}"on-tap="_open"></paper-icon-button></div>
-    </td>-->
-    <td on-tap="showDetailSujet">
-      <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
-      <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
-    </td>
-    <td on-tap="showDetailPredicat">
-      <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
-      <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
-    </td>
-    <td on-tap="showDetailObjet">
-      <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-      <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-    </td>
-  </tr>
-  <tr hidden$={{!modifications}}>
-    <td colspan="4">
-      <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>
-      <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
-      <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
-    </td>
-  </tr>
-</template>
+     <!-- <td>
+        <div hidden$={{item.open}}><paper-icon-button icon="lock-open" title="Fermer" item="{{item}}"on-tap="_close"></paper-icon-button></div>
+        <div hidden$={{!item.open}}><paper-icon-button icon="lock-outline" title="Ouvrir" item="{{item}}"on-tap="_open"></paper-icon-button></div>
+      </td>-->
+      <td on-tap="showDetailSujet">
+        <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
+        <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
+      </td>
+      <td on-tap="showDetailPredicat">
+        <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
+        <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
+      </td>
+      <td on-tap="showDetailObjet">
+        <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
+        <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
+      </td>
+    </tr>
+    <tr hidden$={{!modifications}}>
+      <td colspan="4">
+        <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>
+        <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
+        <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
+      </td>
+    </tr>
+  </template>
 </table>
 </div>
 
@@ -175,18 +151,18 @@ A METTRE PLUS TARD
 
 <paper-dialog id="addDialog">
   <h2>Ajout d'une information</h2>
-  <paper-input label="Sujet" type="search" value="{{sujetTemp.localName}}"></paper-input>
-  <paper-input label="propriete" type="search" value="{{proprieteTemp.localName}}"></paper-input>
-  <paper-input label="Objet" type="search" value="{{objetTemp.localName}}"></paper-input>
-  <paper-toggle-button id="literalAdd">Literal</paper-toggle-button>
+  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
+  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
+  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
+  <paper-toggle-button id="literal">Literal</paper-toggle-button>
   <paper-button  raised  item="{{item}}" on-tap="_addTriplet" >OK</paper-button>
 </paper-dialog>
 
 <paper-dialog id="dialog">
   <h2>Modification</h2>
-  <paper-input type="search" label="Sujet" id="sujetModif" value="{{sujetTemp.localName}}"></paper-input>
-  <paper-input type="search" label="propriete" id="propModif" value="{{proprieteTemp.localName}}"></paper-input>
-  <paper-input type="search" label="Objet" id="objetModif" value="{{objetTemp.localName}}"></paper-input>
+  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
+  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
+  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
   <paper-toggle-button id="literal">Literal</paper-toggle-button>
   <paper-button  raised  item="{{item}}" on-tap="_sendChangement" >OK</paper-button>
 </paper-dialog>
@@ -204,34 +180,27 @@ A METTRE PLUS TARD
   <h2>Partager</h2>
 
   <p>{{shareUrl}}</p>
-  <twitter-link
-  href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
-  <a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{shareUrl}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
+<twitter-link
+ href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
+<a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{shareUrl}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
 
-  <facebook-link href="https://www.facebook.com/sharer/sharer.php?u={{shareUrl}}" height="15px"></facebook-link>
-  <!--<vimeo-link href="https://www.vimeo.com/@smag0" height="15px"></vimeo-link>
-  <skype-link href="https://www.skype.com/@" height="15px"></skype-link>-->
-  <youtube-link href="https://plus.google.com/share?url={{shareUrl}}" height="15px"></youtube-link>
+<facebook-link href="https://www.facebook.com/sharer/sharer.php?u={{shareUrl}}" height="15px"></facebook-link>
+<!--<vimeo-link href="https://www.vimeo.com/@smag0" height="15px"></vimeo-link>
+<skype-link href="https://www.skype.com/@" height="15px"></skype-link>-->
+<youtube-link href="https://plus.google.com/share?url={{shareUrl}}" height="15px"></youtube-link>
 
-  <linkedin-link href="https://www.linkedin.com/shareArticle?mini=true&url={{shareUrl}}&title=La%20r%C3%A9volution%20des%20donn%C3%A9es%20ouvertes&summary=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.&source={{shareUrl}}" height="15px"></linkedin-link>
-  <!--<behance-link href="https://www.behance.com/@bkawk" height="15px"></behance-link>-->
-  <pinterest-link href="https://pinterest.com/pin/create/button/?url={{shareUrl}}&description=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres." height="15px"></pinterest-link>
-  <!--
-  <convoo-link href="https://www.convoo.me/@bkawk" height="15px"></convoo-link>
-  <snapchat-link href="https://www.snapchat.com/@bkawk" height="15px"></snapchat-link>
-  <github-link href="https://www.github.com/@bkawk" height="15px"></github-link>
-  <instagram-link href="https://www.instagram.com/@bkawk" height="15px"></instagram-link>
-  <dribbble-link href="https://www.dribbble.com/@bkawk" height="15px"></dribbble-link> -->
+<linkedin-link href="https://www.linkedin.com/shareArticle?mini=true&url={{shareUrl}}&title=La%20r%C3%A9volution%20des%20donn%C3%A9es%20ouvertes&summary=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.&source={{shareUrl}}" height="15px"></linkedin-link>
+<!--<behance-link href="https://www.behance.com/@bkawk" height="15px"></behance-link>-->
+<pinterest-link href="https://pinterest.com/pin/create/button/?url={{shareUrl}}&description=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres." height="15px"></pinterest-link>
+<!--
+<convoo-link href="https://www.convoo.me/@bkawk" height="15px"></convoo-link>
+<snapchat-link href="https://www.snapchat.com/@bkawk" height="15px"></snapchat-link>
+<github-link href="https://www.github.com/@bkawk" height="15px"></github-link>
+<instagram-link href="https://www.instagram.com/@bkawk" height="15px"></instagram-link>
+<dribbble-link href="https://www.dribbble.com/@bkawk" height="15px"></dribbble-link> -->
   <paper-button  raised on-tap="_closeShare">OK</paper-button>
 </paper-dialog>
 
-<!-- A Supprimer qd les vues de pages sont ok
-<template is="dom-repeat" items="{{vues}}" as="vue">
-<div>First name: <span>{{vue.value}}</span></div>
-<div>Last name: <span>{{vue.type}}</span></div>
-{{vues}}
-{{vue}}
-</template>-->
 </template>
 
 <script>
@@ -243,12 +212,6 @@ Polymer({
       return {
         type: 'SET_CURRENT_NODE',
         currentNode: node
-      }
-    },
-    setCurrentVue: function(vue){
-      return {
-        type: 'SET_CURRENT_VUE',
-        currentVue: vue
       }
     },
     update_nb_maj: function(nb){
@@ -300,20 +263,6 @@ Polymer({
       statePath: 'nb',
       observer: '_nbChanged'
     },
-    vues: {
-      type: Array,
-      value: [],
-      observer: '_vuesChanged',
-      notify: true
-    },
-    showProjetVue: {
-      type: Boolean,
-      value: false
-    },
-    showPersonneVue: {
-      type: Boolean,
-      value: false
-    }
   },
   isEmptyObject: function(obj) {
     for (var key in obj) {
@@ -347,8 +296,8 @@ Polymer({
       this.action = "query";
       this.urlDetail = this.computeUrlDetail(this.url,this.ds,this.action);
       this.options = this.computedOptions(this.graphe,this.limite,this.output)
-      //  console.log(this.urlDetail);
-      //  console.log(this.options);
+    //  console.log(this.urlDetail);
+    //  console.log(this.options);
       this.$.ajaxGet.generateRequest();
     }
   },
@@ -364,47 +313,10 @@ Polymer({
   },
   /* Recuperation de la reponse */
   handleResponse:function(data){
-    this.vues = [];
-    this.showListVue = false;
+
     this.head=data.detail.response.head.vars;
     this.results=data.detail.response.results.bindings;
-//    console.log(this.results);
-    var resultats = this.results;
-    for (var i = 0; i < resultats.length; i++) {
-      // Iterate over numeric indexes from 0 to 5, as everyone expects.
-  //    console.log(resultats[i]);
-      var resultat = resultats[i];
-      var sujet = resultat["Sujet"];
-      var predicat = resultat["Predicat"];
-      var objet = resultat["Objet"];
-    //  console.log(sujet +" "+ predicat+" "+objet);
-      if( predicat.value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"){
-        console.log("TYPE " +objet.value );
-        var newVue = {value: objet.value, type:'uri'};
-        this.push('vues', newVue);
-        // Force data system to pick up array mutations
-        var array = this.vues;
-        this.vues = [];
-        this.vues = array;
-console.log(this.vues);
-        if(this.vues.length>1){
-          this.showListVue = true;
-           this.$.vueListBox.selected = null;
-        }else{
-          this.showListVue = false;
-           this.$.vueListBox.selected = 1;
-        }
-
-      }
-      /*   var sujetType = sujet.type;
-      var predicatType = predicat["type"];
-      var objetType = objet["type"];
-      var sujetValue = sujet["value"];
-      var predicatValue = predicat['value'];
-      var objetValue = objet['value'];
-      console.log(objetValue);*/
-
-    }
+    console.log(this.results);
   },
 
   /**
@@ -513,44 +425,13 @@ _sendChangement: function(){
   var oldPropUri = this.proprieteTemp.uri;
   var oldObjUri = this.objetTemp.uri;
   var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
-  var newPropUri ;
-  //= this.proprieteTemp.prefix+this.proprieteTemp.localName;
+  var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
   var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
   var oldObjetType = this.objetTemp.type;
   var newObjLiteral =  this.$.literal.checked;
 
-  switch(this.proprieteTemp.localName) {
-    case "type":
-    newPropUri="rdf:type";
-    break;
-    case "hasPart":
-    newPropUri="dcterms:hasPart";
-    break;
-    case "isPartOf":
-    newPropUri="dcterms:isPartOf";
-    break;
-    case "subClassOf":
-    newPropUri="rdfs:subClassOf";
-    break;
-    case "sameAs":
-    newPropUri="owl:sameAs";
-    break;
-    case "label":
-    newPropUri = "rdfs:label";
-    break;
-    default:
-    //  newPropUri = "smag:"+propriete;
-    newPropUri = '<'+this.proprieteTemp.prefix+this.proprieteTemp.localName+'>';
-  }
-
-
   // MODIFICATION D'UN TRIPLET
-  var query  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-  query +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
-  query += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
-  query += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
-  query += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
-  //  update += "INSERT DATA { \n";
+  var query = '';
   if (this.graphe != ""){
     query = 'WITH '+this.graphe+'\n';
   }
@@ -562,9 +443,9 @@ _sendChangement: function(){
   }
   query += 'INSERT \n';
   if (!newObjLiteral){
-    query += '{ <'+newSujUri+'> '+newPropUri+' <'+newObjUri+'> }\n';
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
   }else{
-    query += '{ <'+newSujUri+'> '+newPropUri+' "'+newObjUri+'" }\n';
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
   }
   query += 'WHERE\n';
   if (oldObjetType == "uri"){
@@ -638,25 +519,28 @@ _recharger: function(){
 },
 _partager: function(){
   console.log(this.currentNode);
-  // this.shareUrl = this.currentNode.value;
-  var node = this.currentNode;
-  var valSplit = node.value.split("#")[1];
-  if (valSplit == undefined){
-    valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
-  }
-  this.valSplit = valSplit;
-  this.shareUrl = "http://"+window.location.host+"/%3Fsearch="+valSplit;
-  this.$.share.toggle();
+ // this.shareUrl = this.currentNode.value;
+ var node = this.currentNode;
+ var valSplit = node.value.split("#")[1];
+      if (valSplit == undefined){
+        valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+      }
+      this.valSplit = valSplit;
+ this.shareUrl = "http://"+window.location.host+"/%3Fsearch="+valSplit;
+    this.$.share.toggle();
 },
 _closeShare: function(){
-  this.$.share.toggle();
+    this.$.share.toggle();
 },
 _openAdd: function(item){
-  //var item = e.model.item;
-  console.log(item);
+//var item = e.model.item;
+console.log(item);
   this.sujetTemp = this.splitDecompose(item.Sujet);
   this.proprieteTemp = this.splitDecompose(item.Predicat);
   this.objetTemp = this.splitDecompose(item.Objet);
+
+
+
   this.$.addDialog.toggle();
 },
 
@@ -667,134 +551,62 @@ _addTriplet: function(){
   var oldPropUri = this.proprieteTemp.uri;
   var oldObjUri = this.objetTemp.uri;
   var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
-  var newPropUri;
-  // = this.proprieteTemp.prefix+this.proprieteTemp.localName;
+  var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
   var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
-  var newObjetTemp = this.objetTemp.localName;
   var oldObjetType = this.objetTemp.type;
-  switch(this.proprieteTemp.localName) {
-    case "type":
-    newPropUri="rdf:type";
-    break;
-    case "hasPart":
-    newPropUri="dcterms:hasPart";
-    break;
-    case "isPartOf":
-    newPropUri="dcterms:isPartOf";
-    break;
-    case "subClassOf":
-    newPropUri="rdfs:subClassOf";
-    break;
-    case "sameAs":
-    newPropUri="owl:sameAs";
-    break;
-    case "label":
-    newPropUri = "rdfs:label";
-    break;
-    default:
-    //  newPropUri = "smag:"+propriete;
-    newPropUri = '<'+this.proprieteTemp.prefix+this.proprieteTemp.localName+'>';
-  }
-  if (this.objetTemp.localName.indexOf(' ') >= 0){
-    this.$.literalAdd.checked = true;
-  }
-  var newObjLiteral =  this.$.literalAdd.checked;
+  var newObjLiteral =  this.$.literal.checked;
+
   // MODIFICATION D'UN TRIPLET
-  /* var query = '';
+ /* var query = '';
   if (this.graphe != ""){
-  query = 'WITH '+this.graphe+'\n';
-}*/
-// query += 'DELETE \n';
-// if (oldObjetType == "uri"){
-//   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-// }else{
-//   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-// }
-/*query += 'INSERT \n';
-if (!newObjLiteral){
-query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
-}else{
-query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
-}*/
-/* query += 'WHERE\n';
-if (oldObjetType == "uri"){
-query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-}
-else{
-query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-}*/
-var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
-update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
-update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
-update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
-update += "INSERT DATA { \n";
-if (this.graphe != ""){
-  update += "GRAPH "+this.graphe+"{ \n";
-}
-if (!newObjLiteral){
-  update += '<'+newSujUri+'> '+newPropUri+' <'+newObjUri+'> \n';
-}else{
-  update += ' <'+newSujUri+'> '+newPropUri+' "'+newObjetTemp+'" \n';
-}
-if (this.graphe != ""){
-  update += "  } \n";
-}
-update += "  } \n";
-this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
-this.query = update;
-this.optionsModif = {};
-this.optionsModif.update=update;
-console.log(this.query);
-console.log(this.$.ajaxChangement);
-this.$.ajaxChangement.generateRequest();
-this.$.addDialog.toggle();
-},
-_vuesChanged: function(vues){
-  console.log("vues CHANGED");
-  console.log(this.vues);
-  console.log(vues);
-  this.showProjetVue = false;
-  this.showPersonneVue = false;
- this.$.vueListBox.selected = 1;
-},
-_vueSelected: function(e){
-    var selectedItem = e.target.selectedItem;
-    if (selectedItem) {
-      console.log(selectedItem.innerText);
-      var vocabTexte = selectedItem.innerText;
-      this.selectVocab(vocabTexte);
-      console.log(selectedItem.id);
-    /*  if (selectedItem.innerText == "Autre"){
-        this.showListDropdown = false;
-        this.literalChecked = true;
-        this.objet = "";
-      }else{
-        this.objet = selectedItem.innerText;
-        this.literalChecked = false;
-      }*/
-    }
-  },
-  selectVocab: function(vocabTexte){
-    this.showProjetVue = false;
-    this.showPersonneVue = false;
-    switch(vocabTexte) {
-    case "Projet":
-        console.log("doap");
-        this.showProjetVue = true;
-        this.dispatch('setCurrentVue', "doap");
-        break;
-    case "Personne":
-        console.log("foaf");
-        this.showPersonneVue = true;
-        this.dispatch('setCurrentVue', "foaf");
-        break;
-    default:
-        console.log("vocab inconnu, implémenter la recherche, et l'ajout de vocab");
-        this.showProjetVue = false;
-        this.showPersonneVue = false;
-}
+    query = 'WITH '+this.graphe+'\n';
+  }*/
+ // query += 'DELETE \n';
+ // if (oldObjetType == "uri"){
+ //   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+ // }else{
+ //   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+ // }
+  /*query += 'INSERT \n';
+  if (!newObjLiteral){
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
+  }else{
+    query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
+  }*/
+ /* query += 'WHERE\n';
+  if (oldObjetType == "uri"){
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
   }
+  else{
+    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+  }*/
+        var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+      update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+      update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+      update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+      update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
+      update += "INSERT DATA { \n";
+      if (this.graphe != ""){
+        update += "GRAPH "+this.graphe+"{ \n";
+      }
+  if (!newObjLiteral){
+    update += '<'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> \n';
+  }else{
+    update += ' <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" \n';
+  }
+      if (this.graphe != ""){
+        update += "  } \n";
+      }
+      update += "  } \n";
+  this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
+  this.query = update;
+  this.optionsModif = {};
+  this.optionsModif.update=update;
+  console.log(this.query);
+  console.log(this.$.ajaxChangement);
+  this.$.ajaxChangement.generateRequest();
+  this.$.addDialog.toggle();
+},
 
 });
 

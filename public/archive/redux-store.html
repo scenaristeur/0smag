@@ -20,15 +20,12 @@ const initialState = {
   ds: "test",
   graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
   currentNode: {},
-  currentVue: {},
   nb: 0,
   objets: ["Chose", "Projet", "Environnement", "Acteur", "Compétence", "Organisation", "Rôle", "Action", "Evénement", "Etape", "Autre"],
   proprietes: ["type", "label", "hasPart", "isPartOf", "subClassOf", "sameAs", "Autre"],
   lang: ["fr"],
   derniers: [],
-  longueurDerniers: 9,
-  vocabulaires: {"Personne" : "foaf", "Projet": "doap"},
-
+  longueurDerniers: 9
 };
 
 /* DEBUT a virer dans une autre page avec une action */
@@ -55,23 +52,20 @@ const reducer = (state, action) => {
     statements.push(action.statement);
     return Object.assign({}, state, { statements: statements });
     break;
-
     case 'UPDATE_NB_MAJ':
     var nb = action.nb;
     return Object.assign({}, state, { nb: nb });
     break;
-
     case 'UPDATE_PARAMETRES':
     var url = action.url;
     var ds = action.ds;
     var graphe = action.graphe;
     return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
     break;
-
     case 'SET_CURRENT_NODE':
     console.log(action);
-  //  var currentNode = state.currentNode;
-    var currentNode = action.currentNode;
+    var currentNode = state.currentNode;
+    currentNode = action.currentNode;
     const derniers = state.derniers.slice(0);
     if( derniers.indexOf(action.currentNode) < 0 ){
       derniers.unshift(action.currentNode);
@@ -81,12 +75,6 @@ const reducer = (state, action) => {
     }
     return Object.assign({},state, {currentNode: currentNode, derniers: derniers});
     break;
-    case 'SET_CURRENT_VUE':
-    console.log(action);
-    var currentVue = action.currentVue;
-    return Object.assign({},state, {currentVue: currentVue});
-    break;
-
     case 'SET_SERVEUR':
     const serveur = action.serveur;
     var url ="";
@@ -107,18 +95,11 @@ const reducer = (state, action) => {
       ds = "ds";
       graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
     }
-    else if (serveur == "dbpedia" ) {
-      //http://dbpedia.org/sparql/?query=SELECT+*+WHERE+{%0D%0A%3Fs+%3Fp+%3Fo%0D%0A}%0D%0ALIMIT+100&output=json
-      url = "http://dbpedia.org/sparql";
-    //  ds = "ds";
-    //  graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
-    }
     console.log(url);
     console.log(ds);
     console.log(graphe);
     return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
     break;
-
     default:
     console.log("reducer ne connait pas cette action");
   }

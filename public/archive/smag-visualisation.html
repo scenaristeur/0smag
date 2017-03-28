@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
 
-<!--<link rel="import" href="smag-derniers.html">-->
+<link rel="import" href="smag-derniers.html">
 <link rel="import" href="smag-filtre.html">
 
 
@@ -81,7 +81,7 @@ debounce-duration="300">
 
 <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
 <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
-<!--<smag-derniers></smag-derniers>-->
+<smag-derniers></smag-derniers>
 <smag-filtre></smag-filtre>
 
 <!--<paper-input label="Filtre : ne pas afficher"></paper-input> -->
@@ -234,12 +234,7 @@ debounce-duration="300">
     },
     computedUrl: function(url,ds,action){
       this.results = null;
-      console.log(ds);
-      if(ds != undefined){
       return [url,ds,action].join('/');
-    }else{
-      return [url,action].join('/');
-    }
     },
     computedOptions: function(graphe,limite,output){
       if (graphe != ""){
@@ -248,7 +243,7 @@ debounce-duration="300">
         this.query = 'SELECT * WHERE {?Sujet ?Predicat ?Objet}'
       }
       var queryLimite=this.query+" LIMIT "+limite;
-        console.log(queryLimite);
+      //  console.log(queryLimite);
       return{query: queryLimite, output: output};
     },
     /* SUPPRESSION D'UN TRIPLET*/
@@ -365,8 +360,6 @@ debounce-duration="300">
       console.log(data.detail.error.message);
     },
     _nbChanged : function(){
-      console.log(this.query);
-      console.log(this.options);
       this.$.ajaxGet.generateRequest();
     },
     splitDecompose: function(binding){

@@ -192,22 +192,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Application sub title -->
     <div class="bottom bottom-container center horizontal layout">
+       <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
       <div class="bottom-title paper-font-subhead">Système Multi-Agents Global v0</div>
       <!--  <paper-toggle-button  class="bottom-title paper-font-subhead" checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
       <paper-toggle-button  class="bottom-title paper-font-subhead" checked="{{modifications}}">Avec Modifications</paper-toggle-button>
     -->    </div>
 
-
-
-
   </paper-toolbar>
 
   <!-- Main Content -->
   <div class="content">
-    <smag-derniers></smag-derniers>
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
       <section data-route="home">
+
+
 
         <paper-material elevation="1">
           <!--   <h1 id="mindmapTitle"></h1>
@@ -287,10 +286,10 @@ this software without specific prior written permission.</li>
     <a href="" target="_blank" class="inherit"><paper-button raised>1/paper-button></a><br>
 
 
-
+      
       <a href$="{{baseUrl}}users/MSN LYON" class="inherit">Addy <paper-button raised>Addy</paper-button></a><br>
       <a href$="{{baseUrl}}users/Chuck">Chuck</a><br>
-      <a href$="{{baseUrl}}users/Trevor">Trevor <paper-button raised>Trevor</paper-button></a><br>
+      <a href$="{{baseUrl}}users/Trevor">Trevor <paper-button raised>Trevor</paper-button></a><br> 
     </paper-material>
   </section>
   -->

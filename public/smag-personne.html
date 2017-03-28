@@ -1,0 +1,32 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="smag-personne">
+  <template>
+    <h3>Nous avons [[statementCount]] information(s) smagPersonne</h3>
+  </template>
+
+  <script>
+  Polymer({
+    is: 'smag-personne',
+    behaviors: [ ReduxBehavior ],
+    properties: {
+      statements: {
+        type: Array,
+        statePath: 'statements'
+      },
+      statementCount: {
+        type: Number,
+        computed: 'computedStatementCount(statements)'
+      }
+    },
+    computedStatementCount: function(statements) {
+      return statements.length;
+    }
+  });
+
+  </script>
+
+</dom-module>
