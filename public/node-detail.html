@@ -37,6 +37,9 @@
   :host {
     display: block;
   }
+  paper-button {
+    text-transform: none;
+  }
   table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -94,7 +97,7 @@ debounce-duration="300">
 <paper-icon-button icon="create" on-tap="_openAdd" item="{{currentNode}}" title="Modifier ce noeud"></paper-icon-button>
 
 <!--A mettre en place si plusieurs vues <paper-dropdown-menu label="Vue" hidden$={{!showListVue}} style="width:20em">-->
-  <paper-dropdown-menu label="Vue"  style="width:20em">
+<paper-dropdown-menu label="Vue"  style="width:20em">
   <paper-listbox class="dropdown-content" id="vueListBox" style="width:20em" on-iron-select="_vueSelected" > <!--selected="1"-->
     <template is="dom-repeat" items="[[vues]]" as="vue">
       <paper-item id={{vue.value}}>{{afficheLocalName(vue)}}</paper-item>
@@ -118,14 +121,14 @@ A METTRE PLUS TARD
 
 
 <smag-projet hidden$={{!showProjetVue}}></smag-projet>
-<smag-personne ></smag-personne>
+<smag-personne hidden$={{!showPersonneVue}}></smag-personne>
 <!-- hidden$={{!showPersonneVue}}-->
 
 
 <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
 <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
 
-<smag-filtre></smag-filtre>
+<!--<smag-filtre></smag-filtre>-->
 
 <div class="search-table-outter wrapper">
   <table class="search-table inner">
@@ -140,33 +143,36 @@ A METTRE PLUS TARD
     </template>-->
     <th>Sujet </th><th>Predicat</th><th>Objet</th>
   </tr>
-  <template is="dom-repeat" items="{{results}}">
+  <template is="dom-repeat" items="{{reverse(results)}}">
     <tr>
       <!-- <td>
       <div hidden$={{item.open}}><paper-icon-button icon="lock-open" title="Fermer" item="{{item}}"on-tap="_close"></paper-icon-button></div>
       <div hidden$={{!item.open}}><paper-icon-button icon="lock-outline" title="Ouvrir" item="{{item}}"on-tap="_open"></paper-icon-button></div>
     </td>-->
     <td on-tap="showDetailSujet">
-      <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
+      <!--<div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>    -->
+      <paper-button  hidden$={{prefixes}} raised >{{afficheLocalName(item.Sujet)}}</paper-button>
       <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
     </td>
     <td on-tap="showDetailPredicat">
       <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
       <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
     </td>
-    <td on-tap="showDetailObjet">
-      <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-      <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-    </td>
-  </tr>
-  <tr hidden$={{!modifications}}>
-    <td colspan="4">
-      <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>
-      <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
-      <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
-    </td>
-  </tr>
-</template>
+    <td >
+      <div hidden$={{prefixes}}>
+        <paper-button   hidden$="{{literalNode(item.Objet)}}" raised on-tap="showDetailObjet" >{{afficheLocalName(item.Objet)}}</paper-button> <!--hidden$={{prefixes}}-->
+        <div  hidden$="{{!literalNode(item.Objet)}}" raised >{{afficheLocalName(item.Objet)}}</div> <!--hidden$={{prefixes}} --></div>
+        <div hidden$={{!prefixes}} on-tap="showDetailObjet"><h6>{{item.Objet.value}}</h6></div>
+      </td>
+    </tr>
+    <tr hidden$={{!modifications}}>
+      <td colspan="4">
+        <!--    <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>-->
+        <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
+        <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
+      </td>
+    </tr>
+  </template>
 </table>
 </div>
 
@@ -315,6 +321,12 @@ Polymer({
       value: false
     }
   },
+  literalNode: function(node){
+    if (node== undefined){
+      node = this.currentNode;
+    }
+    return node.type == "literal";
+  },
   isEmptyObject: function(obj) {
     for (var key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -368,31 +380,29 @@ Polymer({
     this.showListVue = false;
     this.head=data.detail.response.head.vars;
     this.results=data.detail.response.results.bindings;
-//    console.log(this.results);
+    //    console.log(this.results);
     var resultats = this.results;
     for (var i = 0; i < resultats.length; i++) {
       // Iterate over numeric indexes from 0 to 5, as everyone expects.
-  //    console.log(resultats[i]);
+      //    console.log(resultats[i]);
       var resultat = resultats[i];
       var sujet = resultat["Sujet"];
       var predicat = resultat["Predicat"];
       var objet = resultat["Objet"];
-    //  console.log(sujet +" "+ predicat+" "+objet);
-      if( predicat.value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"){
-        console.log("TYPE " +objet.value );
+      if( ( predicat.value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !this.isEmptyObject(objet) ) {
         var newVue = {value: objet.value, type:'uri'};
         this.push('vues', newVue);
         // Force data system to pick up array mutations
         var array = this.vues;
         this.vues = [];
         this.vues = array;
-console.log(this.vues);
+        console.log(this.vues);
         if(this.vues.length>1){
           this.showListVue = true;
-           this.$.vueListBox.selected = null;
+          this.$.vueListBox.selected = null;
         }else{
           this.showListVue = false;
-           this.$.vueListBox.selected = 1;
+          this.$.vueListBox.selected = 1;
         }
 
       }
@@ -552,7 +562,7 @@ _sendChangement: function(){
   query += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
   //  update += "INSERT DATA { \n";
   if (this.graphe != ""){
-    query = 'WITH '+this.graphe+'\n';
+    query += 'WITH '+this.graphe+'\n';
   }
   query += 'DELETE \n';
   if (oldObjetType == "uri"){
@@ -756,45 +766,48 @@ _vuesChanged: function(vues){
   console.log(vues);
   this.showProjetVue = false;
   this.showPersonneVue = false;
- this.$.vueListBox.selected = 1;
+  this.$.vueListBox.selected = 1;
 },
 _vueSelected: function(e){
-    var selectedItem = e.target.selectedItem;
-    if (selectedItem) {
-      console.log(selectedItem.innerText);
-      var vocabTexte = selectedItem.innerText;
-      this.selectVocab(vocabTexte);
-      console.log(selectedItem.id);
+  var selectedItem = e.target.selectedItem;
+  if (selectedItem) {
+    console.log(selectedItem.innerText);
+    var vocabTexte = selectedItem.innerText;
+    this.selectVocab(vocabTexte);
+    console.log(selectedItem.id);
     /*  if (selectedItem.innerText == "Autre"){
-        this.showListDropdown = false;
-        this.literalChecked = true;
-        this.objet = "";
-      }else{
-        this.objet = selectedItem.innerText;
-        this.literalChecked = false;
-      }*/
-    }
-  },
-  selectVocab: function(vocabTexte){
+    this.showListDropdown = false;
+    this.literalChecked = true;
+    this.objet = "";
+  }else{
+  this.objet = selectedItem.innerText;
+  this.literalChecked = false;
+}*/
+}
+},
+selectVocab: function(vocabTexte){
+  this.showProjetVue = false;
+  this.showPersonneVue = false;
+  switch(vocabTexte) {
+    case "Projet":
+    console.log("doap");
+    this.showProjetVue = true;
+    this.dispatch('setCurrentVue', "doap");
+    break;
+    case "Personne":
+    console.log("foaf");
+    this.showPersonneVue = true;
+    this.dispatch('setCurrentVue', "foaf");
+    break;
+    default:
+    console.log("vocab inconnu, implémenter la recherche, et l'ajout de vocab");
     this.showProjetVue = false;
     this.showPersonneVue = false;
-    switch(vocabTexte) {
-    case "Projet":
-        console.log("doap");
-        this.showProjetVue = true;
-        this.dispatch('setCurrentVue', "doap");
-        break;
-    case "Personne":
-        console.log("foaf");
-        this.showPersonneVue = true;
-        this.dispatch('setCurrentVue', "foaf");
-        break;
-    default:
-        console.log("vocab inconnu, implémenter la recherche, et l'ajout de vocab");
-        this.showProjetVue = false;
-        this.showPersonneVue = false;
-}
   }
+},
+reverse: function(array){
+  return array.reverse();
+}
 
 });
 

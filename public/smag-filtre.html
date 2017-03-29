@@ -4,27 +4,69 @@
 
 
 <dom-module id="smag-filtre">
-  <!--<template>
-    <h3>Filtre</h3>
-  </template>-->
+  <template>
+  <!--<span on-tap="_showViz">
+    <paper-button raised >Tout</paper-buttion>
+
+    </span>-->
+    <paper-dropdown-menu label="Filtre" hidden$={{!showListDropdown}} >
+      <paper-listbox class="dropdown-content" id="listbox"  on-iron-select="_itemSelected" >
+        <template is="dom-repeat" items="[[objets]]" as="obj">
+          <paper-item>{{obj}}</paper-item>
+        </template>
+      </paper-listbox>
+    </paper-dropdown-menu>
+  </template>
 
   <script>
   Polymer({
     is: 'smag-filtre',
     behaviors: [ ReduxBehavior ],
-    properties: {
-      statements: {
-        type: Array,
-        statePath: 'statements'
+    actions:{
+      setCurrentNode: function(node){
+        return {
+          type: 'SET_CURRENT_NODE',
+          currentNode: node
+        }
       },
-      statementCount: {
-        type: Number,
-        computed: 'computedStatementCount(statements)'
+    },
+    properties: {
+      objets : {
+        type : Array,
+        statePath: 'objets',
+        observer: '_objetsOk'
+      },
+    },
+    _objetsOk: function(){
+      this.unshift('objets','Tout');
+    },
+    /*_showViz: function(){
+      this.$.listbox.selected = null;
+      page.redirect("/visualisation");
+    },*/
+    _itemSelected : function(e) {
+      var selectedItem = e.target.selectedItem;
+      if (selectedItem) {
+        if (selectedItem.innerText == "Tout"){
+          this.$.listbox.selected = null;
+          page.redirect("/visualisation");
+        //  this.showListDropdown = false;
+        //  this.literalChecked = true;
+        //  this.objet = "";
+        }else{
+        //  this.objet = selectedItem.innerText;
+        //  this.literalChecked = false;
+
+        var node = {};
+        node.type='uri';
+        node.value='http://smag0.blogspot.fr/NS#'+selectedItem.innerText.trim();
+        console.log(node);
+        this.dispatch('setCurrentNode', node);
+        // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+        page.redirect("/detail");
+            }
       }
     },
-    computedStatementCount: function(statements) {
-      return statements.length;
-    }
   });
 
   </script>

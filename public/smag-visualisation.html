@@ -13,10 +13,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
 
-<!--<link rel="import" href="smag-derniers.html">-->
-<link rel="import" href="smag-filtre.html">
-
-
 
 <dom-module id="smag-visualisation">
   <template>
@@ -24,6 +20,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style>
   :host {
     display: block;
+  }
+  paper-button {
+    text-transform: none;
   }
   table {
     font-family: arial, sans-serif;
@@ -82,7 +81,7 @@ debounce-duration="300">
 <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
 <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
 <!--<smag-derniers></smag-derniers>-->
-<smag-filtre></smag-filtre>
+<!--<smag-filtre></smag-filtre>-->
 
 <!--<paper-input label="Filtre : ne pas afficher"></paper-input> -->
 <!--    <paper-button raised>Sauvegarder</paper-button>-->
@@ -97,51 +96,56 @@ debounce-duration="300">
         <th>{{item}}</th>
       </template>
     </tr>
-    <template is="dom-repeat" items="{{results}}">
+    <template is="dom-repeat" items="{{reverso(results)}}">
       <tr>
         <td on-tap="showDetailSujet">
-          <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
+          <!--<div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>-->
+          <paper-button  hidden$={{prefixes}} raised >{{afficheLocalName(item.Sujet)}}</paper-button>
           <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
         </td>
         <td on-tap="showDetailPredicat">
           <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
           <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
         </td>
-        <td on-tap="showDetailObjet">
-          <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-          <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-        </td>
-      </tr>
-      <tr hidden$={{!modifications}}>
-        <td colspan="3">
-          <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
-          <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button>
-        </td>
-      </tr>
-    </template>
-  </table>
-</div>
+        <td >
+          <div hidden$={{prefixes}}>
+            <paper-button   hidden$="{{literalNode(item.Objet)}}" raised on-tap="showDetailObjet" >{{afficheLocalName(item.Objet)}}</paper-button> <!--hidden$={{prefixes}}-->
+            <div  hidden$="{{!literalNode(item.Objet)}}" raised >{{afficheLocalName(item.Objet)}}</div> <!--hidden$={{prefixes}} --></div>
+            <div hidden$={{!prefixes}} on-tap="showDetailObjet"><h6>{{item.Objet.value}}</h6></div>
+          </td>
+        </tr>
+        <tr hidden$={{!modifications}}>
+          <td colspan="3">
+            <!--  <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
+            <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button> -->
+            <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
+            <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
+          </td>
+        </tr>
+      </template>
+    </table>
+  </div>
 
-<paper-input label="Requête" value="{{query}}"></paper-input>
-<paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
+  <paper-input label="Requête" value="{{query}}"></paper-input>
+  <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
 
-<paper-dialog id="dialog">
-  <h2>Modification</h2>
-  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
-  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
-  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
-  <paper-toggle-button id="literal">Literal</paper-toggle-button>
-  <paper-button item="{{item}}" raised on-tap="_sendChangement">OK</paper-button>
-</paper-dialog>
+  <paper-dialog id="dialog">
+    <h2>Modification</h2>
+    <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
+    <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
+    <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
+    <paper-toggle-button id="literal">Literal</paper-toggle-button>
+    <paper-button item="{{item}}" raised on-tap="_sendChangement">OK</paper-button>
+  </paper-dialog>
 
-<paper-dialog id="suppDialog">
-  <h2>Suppression</h2>
-  <p>Confirmez vous la suppression du triplet suivant : </p>
-  <p>{{sujetTemp.localName}}</p>
-  <p>{{proprieteTemp.localName}}</p>
-  <p>{{objetTemp.localName}}</p>
-  <paper-button item="{{item}}" raised on-tap="_suppTriplet">OK</paper-button>
-</paper-dialog>
+  <paper-dialog id="suppDialog">
+    <h2>Suppression</h2>
+    <p>Confirmez vous la suppression du triplet suivant : </p>
+    <p>{{sujetTemp.localName}}</p>
+    <p>{{proprieteTemp.localName}}</p>
+    <p>{{objetTemp.localName}}</p>
+    <paper-button item="{{item}}" raised on-tap="_suppTriplet">OK</paper-button>
+  </paper-dialog>
 </template>
 
 <script>
@@ -186,7 +190,7 @@ debounce-duration="300">
         notify: true
       },
       limite : {
-        value: 100,
+        value: 1000,
         notify: true
       },
       output : {
@@ -226,6 +230,13 @@ debounce-duration="300">
         type: String
       }
     },
+    reverso: function(array1){
+      if(array1 != null){
+      console.log(array1);
+      var rArray=array1.reverse();
+      console.log(rArray);
+      return rArray;}
+    },
     setCurrentNode: function(node){
       const currentNode = node;
       if (currentNode){
@@ -236,10 +247,10 @@ debounce-duration="300">
       this.results = null;
       console.log(ds);
       if(ds != undefined){
-      return [url,ds,action].join('/');
-    }else{
-      return [url,action].join('/');
-    }
+        return [url,ds,action].join('/');
+      }else{
+        return [url,action].join('/');
+      }
     },
     computedOptions: function(graphe,limite,output){
       if (graphe != ""){
@@ -248,7 +259,7 @@ debounce-duration="300">
         this.query = 'SELECT * WHERE {?Sujet ?Predicat ?Objet}'
       }
       var queryLimite=this.query+" LIMIT "+limite;
-        console.log(queryLimite);
+      console.log(queryLimite);
       return{query: queryLimite, output: output};
     },
     /* SUPPRESSION D'UN TRIPLET*/
@@ -401,6 +412,9 @@ debounce-duration="300">
       }
     }
     return valSplit;
+  },
+  literalNode: function(node){
+    return node.type == "literal";
   },
   /**
   * recupere et parse la reponse du serveur

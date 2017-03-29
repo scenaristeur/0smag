@@ -54,7 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link href="bower_components/paper-button/paper-button.html" rel="import">
   <link rel="import" href="bower_components/iron-icons/communication-icons.html">
   <link rel="import" href="bower_components/iron-icons/editor-icons.html">
-<link rel="import" href="bower_components/social-links/github-link.html">
+  <link rel="import" href="bower_components/social-links/github-link.html">
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
   <link rel="import" href="elements/elements.html">
@@ -76,16 +76,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="smag-visualisation.html">
   <link rel="import" href="node-detail.html">
   <link rel="import" href="smag-debug.html">
-   <link rel="import" href="smag-queryparam.html">
-      <link rel="import" href="smag-search.html">
+  <link rel="import" href="smag-queryparam.html">
+  <link rel="import" href="smag-search.html">
+  <link rel="import" href="smag-filtre.html">
 
   <!--  <script src="scripts/trace.js"></script> -->
 
 </head>
 
 <body unresolved class="fullbleed layout vertical" >
-
-<!--
+<!-- -->
+  <!--
   <div hidden$="[[hasData(derniers)]]">Loading screen</div>
   <div hidden$="[[!hasData(derniers)]]">Website content</div> -->
 
@@ -100,44 +101,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
           <span class="paper-font-title" paper-drawer-toggle>Menu</span>
-          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
         </paper-toolbar>
 
         <!-- Drawer Content -->
         <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
           <a data-route="home" href="{{baseUrl}}">
             <iron-icon icon="home"></iron-icon>
-            <span>Home</span>
+            <span>Accueil</span>
           </a>
-          <!--
-          <a data-route="installation" href="{{baseUrl}}installation">
-          <iron-icon icon="info"></iron-icon>
-          <span>Installation</span>
-        </a>
-
-        <a data-route="documentation" href="{{baseUrl}}documentation">
-        <iron-icon icon="info"></iron-icon>
-        <span>Documentation</span>
-      </a>
-
-      <a data-route="outils" href="{{baseUrl}}outils">
-      <iron-icon icon="info"></iron-icon>
-      <span>Outils</span>
-    </a>
-
-    <a data-route="projets" href="{{baseUrl}}projets">
-    <iron-icon icon="info"></iron-icon>
-    <span>Accompagnement de Projets</span>
-  </a>
--->
-<!--  <a data-route="users" href="{{baseUrl}}users">
-  <iron-icon icon="info"></iron-icon>
-  <span>Users</span>
-</a>
--->
-
-
-
 
 <a data-route="update" href="{{baseUrl}}update">
   <iron-icon icon="editor:mode-edit"></iron-icon>
@@ -177,14 +148,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <!-- Main Toolbar -->
   <paper-toolbar id="mainToolbar" class="tall">
-    <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-    <span class="flex"></span>
+
+    <span class="flex">     </span>
 
     <!-- Toolbar icons -->
-    <paper-icon-button icon="refresh"></paper-icon-button>
+    <!--  <paper-icon-button icon="refresh"></paper-icon-button>-->
 
     <smag-search></smag-search>
-
+    <smag-filtre ></smag-filtre>
+        <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
     <!-- Application name -->
     <div class="middle middle-container center horizontal layout">
       <div class="app-name">Smag0</div>
@@ -204,202 +176,114 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <!-- Main Content -->
   <div class="content">
-    <smag-derniers></smag-derniers>
+
+
+      <smag-derniers></smag-derniers>
+
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
       <section data-route="home">
 
         <paper-material elevation="1">
-          <!--   <h1 id="mindmapTitle"></h1>
-
-          <a href="http://10.153.82.71/tinaExtractor/Socle%20Tina.html" target="_blank" class="inherit">
-          <paper-button raised  title="tinaMindMap"><img src="images/mindmapTina.png" alt="TiNa MindMap"></paper-button>
-        </a>
-
-        <a href="http://www.freeplane.org/wiki/index.php/Main_Page" target="_blank" class="inherit">
-        <paper-button raised  title="tinaMindMap">Freeplane pour créer cette carte mentale</paper-button>
-      </a>-->
-
-
-
-        <smag-queryparam></smag-queryparam>
+      <smag-queryparam></smag-queryparam>
       <statement-input></statement-input>
       <statement-counter></statement-counter>
       <statement-list></statement-list>
-
-
-
-
-
-
-
-
     </paper-material>
     <paper-material>
       <tension-input></tension-input>
-
     </paper-material>
-
-
-
-    <!-- <paper-material elevation="1">
-    <p class="paper-font-body2">This is another card.</p>
-  </paper-material>
-
-  <paper-material elevation="1">
-  <my-greeting></my-greeting>
-
-  <p class="paper-font-subhead">You now have:</p>
-  <my-list></my-list>
-
-  <p class="paper-font-body2">Looking for more Web App layouts? Check out our <a href="https://github.com/PolymerElements/app-layout-templates">layouts</a> collection. You can also <a href="http://polymerelements.github.io/app-layout-templates/">preview</a> them live.</p>
-</paper-material> -->
-
-
-<!--
-<paper-material elevation="1" class="paper-font-body2">
-<h1 id="license">License</h1>
-<p>Everything in this repo is BSD style license unless otherwise specified.</p>
-<p>Copyright (c) 2015 The Polymer Authors. All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
-<ul>
-<li>Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.</li>
-<li>Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.</li>
-<li>Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.</li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-</paper-material>
--->
 </section>
 <!--
 <section data-route="users">
+<paper-material elevation="1">
+<h2 class="page-title">Users</h2>
+<p>This is the users section</p>
+
+<a href="" target="_blank" class="inherit"><paper-button raised>2</paper-button></a>
+<a href="" target="_blank" class="inherit"><paper-button raised>1/paper-button></a><br>
+
+
+
+<a href$="{{baseUrl}}users/MSN LYON" class="inherit">Addy <paper-button raised>Addy</paper-button></a><br>
+<a href$="{{baseUrl}}users/Chuck">Chuck</a><br>
+<a href$="{{baseUrl}}users/Trevor">Trevor <paper-button raised>Trevor</paper-button></a><br>
+</paper-material>
+</section>
+-->
+
+
+
+<!--   DETAILS USERS & OUTILS -->
+<!--
+<section data-route="user-info">
+<paper-material elevation="1">
+<h2 class="page-title">User: {{params.name}}</h2>
+<div>This is {{params.name}}'s section</div>
+</paper-material>
+</section>-->
+
+
+
+
+<section data-route="faq">
   <paper-material elevation="1">
-    <h2 class="page-title">Users</h2>
-    <p>This is the users section</p>
+    <h2 class="page-title">FAQ</h2>
+    <p>Foire aux questions</p>
+    <p>documente</p>
+  </paper-material>
+</section>
 
-    <a href="" target="_blank" class="inherit"><paper-button raised>2</paper-button></a>
-    <a href="" target="_blank" class="inherit"><paper-button raised>1/paper-button></a><br>
+<section data-route="contact">
+  <paper-material elevation="1">
+    <h2 class="page-title">Contact</h2>
+    <p>
+      <a href="https://github.com/scenaristeur/0smag" target="_blank" class="inherit"><paper-button raised><github-link href="https://github.com/scenaristeur/0smag" height="15px"></github-link></paper-button></a>
+    </p>
+  </paper-material>
+</section>
 
-
-
-      <a href$="{{baseUrl}}users/MSN LYON" class="inherit">Addy <paper-button raised>Addy</paper-button></a><br>
-      <a href$="{{baseUrl}}users/Chuck">Chuck</a><br>
-      <a href$="{{baseUrl}}users/Trevor">Trevor <paper-button raised>Trevor</paper-button></a><br>
-    </paper-material>
-  </section>
-  -->
-<!--
-  <section data-route="installation">
-    <paper-material elevation="1">
-      <h2 class="page-title">Installation</h2>
-
-    </paper-material>
-  </section>
-
-  <section data-route="documentation">
-    <paper-material elevation="1">
-      <h2 class="page-title">Documentation</h2>
-      <p>documentation</p>
-      <p>documente</p>
-    </paper-material>
-  </section>
-
-  <section data-route="projets">
-    <paper-material elevation="1">
-      <h2 class="page-title">Accompagnement de Projets</h2>
-      <a href$="{{baseUrl}}projets/Nouveau"  class="inherit"> <paper-button raised>Nouveau Projet</paper-button></a>
-      <a href$="{{baseUrl}}projets/Existant" class="inherit"> <paper-button raised>Projet Existant</paper-button></a><br>
-    </paper-material>
-  </section>
-
-  <section data-route="outils">
-    <paper-material elevation="1">
-      <h2 class="page-title">Outils</h2>
+<section data-route="parametres">
+  <h2 class="page-title">Paramètres</h2>
+  <paper-material elevation="1">
+    <!--  <smag-parametres></smag-parametres> -->
+    <parametre-affiche></parametre-affiche>
 
 
-      <br>
+  </paper-material>
+
+  <paper-material>
+    <h3>Sources secondaires</h3>
+    <paper-icon-button icon="add-circle-outline" on-tap="" title="Ajouter une source secondaire."></paper-icon-button>
 
 
+  </paper-material>
+</section>
 
-    </paper-material>
-  </section>-->
+<section data-route="update">
+  <paper-material elevation="1">
+    <h2 class="page-title">Update</h2>
+    <smag-update></smag-update>
+  </paper-material>
+</section>
 
-  <!--   DETAILS USERS & OUTILS -->
-<!--
-  <section data-route="user-info">
-    <paper-material elevation="1">
-      <h2 class="page-title">User: {{params.name}}</h2>
-      <div>This is {{params.name}}'s section</div>
-    </paper-material>
-  </section>-->
+<section data-route="visualisation">
+  <paper-material elevation="1">
+    <h3 class="page-title">Visualisation</h3>
+    <smag-visualisation></smag-visualisation>
+  </paper-material>
+</section>
 
+<section data-route="detail">
+  <paper-material elevation="1">
+    <h2 class="page-title">{{params.node}}</h2>
+    <node-detail></node-detail>
+  </paper-material>
+</section>
 
-
-
-  <section data-route="faq">
-    <paper-material elevation="1">
-      <h2 class="page-title">FAQ</h2>
-      <p>Foire aux questions</p>
-      <p>documente</p>
-    </paper-material>
-  </section>
-
-  <section data-route="contact">
-    <paper-material elevation="1">
-      <h2 class="page-title">Contact</h2>
-      <p>
-        <a href="https://github.com/scenaristeur/0smag" target="_blank" class="inherit"><paper-button raised><github-link href="https://github.com/scenaristeur/0smag" height="15px"></github-link></paper-button></a>
-      </p>
-    </paper-material>
-  </section>
-
-  <section data-route="parametres">
-    <h2 class="page-title">Paramètres</h2>
-    <paper-material elevation="1">
-      <!--  <smag-parametres></smag-parametres> -->
-      <parametre-affiche></parametre-affiche>
-
-
-    </paper-material>
-
-    <paper-material>
-      <h3>Sources secondaires</h3>
-      <paper-icon-button icon="add-circle-outline" on-tap="" title="Ajouter une source secondaire."></paper-icon-button>
-
-
-    </paper-material>
-  </section>
-
-  <section data-route="update">
-    <paper-material elevation="1">
-      <h2 class="page-title">Update</h2>
-      <smag-update></smag-update>
-    </paper-material>
-  </section>
-
-  <section data-route="visualisation">
-    <paper-material elevation="1">
-      <h3 class="page-title">Visualisation</h3>
-      <smag-visualisation></smag-visualisation>
-    </paper-material>
-  </section>
-
-  <section data-route="detail">
-    <paper-material elevation="1">
-      <h2 class="page-title">{{params.node}}</h2>
-      <node-detail></node-detail>
-    </paper-material>
-  </section>
-
-  <section data-route="debug">
-    <smag-debug></smag-debug>
-  </section>
+<section data-route="debug">
+  <smag-debug></smag-debug>
+</section>
 
 </iron-pages>
 </div>
