@@ -26,8 +26,8 @@ bower install
 cd ..
 node .
 
-``` 
-ou en une ligne de commande : 
+```
+ou en une ligne de commande :
 
 ```
 git clone https://github.com/scenaristeur/0smag.git && cd 0smag && npm install && cd public && bower install && cd .. && node .
@@ -43,3 +43,4 @@ l'appli devrait se lancer et être accessible à l'adresse "http://127.0.0.1:300
 - Vous pouvez gérer les droits d'accès au serveur Fuseki dans le fichier /fuseki/run/shiro.ini
 
 
+voir aussi graphql : http://graphql.org/learn/

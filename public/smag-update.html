@@ -19,6 +19,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
 
 <link rel="import" href="smag-derniers.html">
 
@@ -45,8 +47,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--
 Endpoint : {{url}}/{{ds}}, graphe : {{graphe}} -->
 
-<smag-derniers></smag-derniers>
-
+<!--<smag-derniers></smag-derniers>-->
+<h2>Un triplet RDF est composé d'un "Sujet", et d'un "Objet" reliés par une "propriété" (ou "predicat").</h2>
 
 <paper-input
 type="text"
@@ -93,7 +95,7 @@ type="text"
 style="width:20em"
 label="Objet"
 value="{{objet::input}}">
-  <paper-icon-button suffix icon="icons:backspace" on-tap="_showListDropdown" title="Cacher champ input"></paper-icon-button>
+<paper-icon-button suffix icon="icons:backspace" on-tap="_showListDropdown" title="Cacher champ input"></paper-icon-button>
 </paper-input>
 
 <paper-toggle-button hidden$={{showListDropdown}} checked="{{literalChecked}}" id="literal">Literal</paper-toggle-button>
@@ -104,10 +106,20 @@ value="{{objet::input}}">
 
 <paper-button
 raised
+id='sendStay'
 on-tap="sendUpdate">
-<iron-icon icon="queue"></iron-icon> <!-- ne s'affiche pas ? -->
-Envoyer
+<iron-icon icon="av:queue"></iron-icon> <!-- ne s'affiche pas ? -->
+Envoyer et rester sur cette page
 </paper-button>
+
+<paper-button
+raised
+id="sendRun"
+on-tap="sendUpdate">
+<iron-icon icon="av:queue"></iron-icon> <!-- ne s'affiche pas ? -->
+Envoyer et continuer avec ce noeud
+</paper-button>
+
 
 </br></br>
 <template is="dom-bind" result="{{result}}" requete="{{requete}}" >
@@ -126,6 +138,12 @@ Envoyer
     is: 'smag-update',
     behaviors: [ ReduxBehavior ],
     actions:{
+      setCurrentNode: function(node){
+        return {
+          type: 'SET_CURRENT_NODE',
+          currentNode: node
+        }
+      },
       update_nb_maj: function(nb){
         return {
           type: 'UPDATE_NB_MAJ',
@@ -201,6 +219,10 @@ Envoyer
       literalChecked: {
         type: Boolean,
         value: false
+      },
+      nextPage:{
+        type: String,
+        value: ""
       }
     },
     /**
@@ -241,10 +263,6 @@ Envoyer
         case "label":
         propSend = "rdfs:label";
         break;
-
-
-
-
         default:
         propSend = "smag:"+propriete;
       }
@@ -279,6 +297,8 @@ Envoyer
     * Execute la requete
     */
     sendUpdate: function (e){
+      console.log(e.target.id);
+      this.nextPage=e.target.id;
       this.options = this.computeUpdate(this.sujet, this.propriete, this.objet,this.graphe);
       console.log(this.options);
       this.$.ajaxupdate.generateRequest();
@@ -295,6 +315,15 @@ Envoyer
       //    				console.log(this.result);
       var nb=this.nb+1;
       this.dispatch('update_nb_maj', nb);
+      console.log(this.nextPage);
+      if (this.nextPage == "sendRun"){
+        var node = {};
+        node.value = "http://smag0.blogspot.fr/NS#"+this.sujet;
+        node.type = "uri";
+        this.dispatch('setCurrentNode', node);
+        // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+        page.redirect("/detail");
+      }
     },
 
     /**

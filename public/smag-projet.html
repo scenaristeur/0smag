@@ -1,0 +1,453 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="smag-projet">
+
+  <template>
+    <iron-ajax
+    id="ajaxupdate"
+    url="{{urlUpdate}}"
+    body="{{options}}"
+    method="POST"
+    handle-as="document"
+    content-type="application/x-www-form-urlencoded"
+    on-response="handleResponse"
+    on-error="ajaxError">
+  </iron-ajax>
+
+  <iron-ajax
+  id="getVocab"
+  url="{{urlVocab}}"
+  handle-as="xml"
+  on-error="ajaxError"
+  on-response="_computeForm"
+  debounce-duration="300"> </iron-ajax>
+  <!--  https://jsonplaceholder.typicode.com/users}}-->
+  <!--     last-response="{{jsondata}}" -->
+
+
+  <h3>Nous avons [[vocabClasses.length]] classes et [[vocabProperties.length]] propriete(s) </h3>
+
+  <!--<paper-dropdown-menu label="Classes"  style="width:20em">
+  <paper-listbox class="dropdown-content" id="classesListBox" style="width:20em" on-iron-select="_classeSelected" >
+  <template is="dom-repeat" items="[[vocabClasses]]" as="classe">
+  <paper-item >{{label(classe)}}</paper-item>
+</template>
+</paper-listbox>
+</paper-dropdown-menu>-->
+
+<paper-dropdown-menu label="Proprietes"  >
+  <paper-listbox class="dropdown-content" id="propertiesListBox"  on-iron-select="_propSelected" > <!--selected="1"-->
+    <template is="dom-repeat" items="[[vocabProperties]]" as="propriete">
+      <paper-item id="{{about(propriete)}}">{{label(propriete)}}</paper-item>
+    </template>
+  </paper-listbox>
+</paper-dropdown-menu>
+<paper-input
+type="text"
+style="width:20em"
+label="Objet"
+value="{{objet::input}}">
+<paper-icon-button suffix icon="icons:backspace" on-tap="_showListDropdown" title="Cacher champ input"></paper-icon-button>
+</paper-input>
+<paper-toggle-button hidden$={{showListDropdown}} checked="{{literalChecked}}" id="literal">Literal</paper-toggle-button>
+<paper-input hidden$={{!literalChecked}} id="lang" style="width:5em" label="langue" value="{{lang}}"></paper-input>
+<paper-button
+raised
+id='sendStay'
+on-tap="sendUpdate">
+<iron-icon icon="av:queue"></iron-icon> <!-- ne s'affiche pas ? -->
+Envoyer
+</paper-button>
+
+
+<div id="results"></div>
+</template>
+
+<script>
+Polymer({
+  is: 'smag-projet',
+  behaviors: [ ReduxBehavior ],
+  actions:{
+    setCurrentNode: function(node){
+      return {
+        type: 'SET_CURRENT_NODE',
+        currentNode: node
+      }
+    },
+    update_nb_maj: function(nb){
+      return {
+        type: 'UPDATE_NB_MAJ',
+        nb: nb
+      }
+    }
+  },
+  properties: {
+    currentNode:{
+      type: Object,
+      statePath: 'currentNode',
+      //  observer: 'updateDetail'
+    },
+    currentVue:{
+      type: Object,
+      statePath: 'currentVue',
+      observer: '_updateVue'
+    },
+    vocabClasses: {
+      type:Array,
+      value: []
+    } ,
+    vocabProperties:{
+      type:Array,
+      value:[]
+    },
+    vocabOntologie:{
+      type: Object,
+      value: {}
+    },
+    url:{
+      type: Object,
+      statePath: 'url'
+    },
+    ds:{
+      type: String,
+      statePath: 'ds'
+    },
+    graphe: {
+      type: String,
+      statePath: 'graphe'
+    },
+    /*  jsondata:{
+    type: Array,
+    notify:true,
+    observer: '_vocabLoaded'
+  }*/
+},
+/*computedStatementCount: function(statements) {
+return statements.length;
+},*/
+label: function(resource){
+  var result =  "";
+  var about = resource.attributes['rdf:about'];
+  var label = resource.attributes['rdfs:label'];
+  if (label != undefined ){
+    result = label.nodeValue;
+  }else{
+    result = about.nodeValue.split("#")[1];
+  }
+  //resultTemp = result.split("=");
+
+  console.log(result);
+  return result;
+},
+about:function(resource){
+  var node = resource.attributes['rdf:about'];
+  return node.nodeValue;
+},
+_propSelected: function(e){
+  var selectedItem = e.target.selectedItem;
+  if (selectedItem) {
+    console.log(selectedItem);
+    console.log(selectedItem.innerText);
+    var id = selectedItem.id;
+    //  var value = id.value;
+    //  var nodeValue = id.nodeValue;
+    //  var vocabTexte = selectedItem.innerText;
+    // this.selectVocab(vocabTexte);
+    console.log(id);
+    this.propriete = id;
+    //  console.log(nodeValue);
+    /*  if (selectedItem.innerText == "Autre"){
+    this.showListDropdown = false;
+    this.literalChecked = true;
+    this.objet = "";
+  }else{
+  this.objet = selectedItem.innerText;
+  this.literalChecked = false;
+}*/
+}
+},
+/*_propSelected : function(e) {
+var selectedItem = e.target.selectedItem;
+if (selectedItem) {
+if (selectedItem.innerText == "Autre"){
+this.showPropDropdown = false;
+this.propriete = "";
+}else{
+this.propriete = selectedItem.innerText;
+}
+}
+
+if (selectedItem) {
+if (selectedItem.innerText == "label"){
+this.showListDropdown = false;
+this.literalChecked = true;
+this.objet = "";
+}
+}
+
+},*/
+_computeForm: function(data){
+  this.vocabClasses = [];
+  this.vocabProperties = [];
+  this.vocabOntologie = [];
+  //double gestion car les vocabulaires foaf et doap ne sont pas implémentés pareil : foaf -> plusieurs noeuds, doap : un seul noeud racine, ceci à cause des commentaires dans foaf... GRRR !
+  console.log("form");
+  console.log(data);
+  var reponse=data.detail.response;
+  console.log(reponse);
+  // console.log(reponse.length);
+  var noeuds = reponse.childNodes;
+  // console.log(noeuds.length);
+  var racine =[];
+  if(noeuds.length==1){
+    racine=noeuds[0].childNodes;
+  }else{
+    for(var n=0;n<noeuds.length;n++){
+      var noeud = noeuds[n];
+      console.log(noeud.nodeName);
+      if (noeud.nodeName == "rdf:RDF"){
+        racine = noeud.childNodes;
+      }
+    }
+  }
+
+  // console.log(racine);
+
+
+  for (var i=0;i< racine.length;i++){
+    var node = racine[i];
+    var nodeType = node.nodeType;
+    var nodeValeur = node.nodeValue;
+    var nodeName = node.nodeName;
+    if (nodeValeur != null){
+      nodeValeur=nodeValeur.trim();
+      //  console.log(noeudValeur.length);
+    }
+
+
+    switch(nodeType) {
+      case 3:
+      //  console.log(nodeType);
+      //  console.log(node);
+      break;
+      case 1:
+      //  console.log(nodeType);
+      console.log(node);
+      console.log(nodeName);
+      switch(nodeName) {
+        case "owl:Ontology":
+        // console.log("la gestion de "+nodeName+" n'est pas encore implémentée")
+        this.vocabOntologie = node;
+        break;
+        case "rdfs:Class":
+        case "owl:Class" : //et rdfs:Class
+        this.push('vocabClasses', node);
+        break;
+        case "owl:AnnotationProperty" :
+        console.log("la gestion de "+nodeName+" n'est pas encore implémentée")
+
+        break;
+        case "rdf:Property" :
+        this.push('vocabProperties', node);
+        break;
+        default:
+        console.log("la gestion de "+nodeName+" n'est pas encore implémentée")
+      }
+      break;
+      case 8:
+      // noeud de type commentaire pas utile pour l'instant
+      //  console.log(nodeType);
+      //  console.log(node);
+      break;
+      default:
+      console.log(nodeType+ " Non traité encore");
+      console.log(node);
+    }
+
+  }
+  //var classes = noeuds.getElementsByTagName("rdfs:Class");
+  //console.log(classes.length);
+
+  //  var properties = noeuds.getElementsByTagName("rdf:Property");
+  //  console.log(properties.length);
+  //  console.log(first);
+  //  var x = xmlDoc.getElementsByTagName("title")[0];
+  //  var y = racine.childNodes[0];
+  //document.getElementById("demo").innerHTML =
+  //console.log(y);
+  //console.log(y.nodeValue);
+  //  console.log();
+  //  console.log(data[0].song);
+  //  console.log(this.jsondata);
+  //  console.log(data.detail.error);
+  //  console.log(data.detail.error.message);
+
+  //    alert(this.ajaxR);
+  //    alert(this.ajaxR[0].song);
+  //  const resp = data.detail.response;
+  //  console.log(resp.results)
+  //  this.$.results.innerHTML = `<pre>${JSON.stringify(resp, null, ' ')}</pre>`;
+  console.log(this.vocabClasses);
+  console.log(this.vocabProperties);
+},
+/**
+* en cas d'erreur de la requete
+*/
+ajaxError : function(data){
+  console.log(data);
+  console.log(data.detail.response);
+  console.log(data.detail.error);
+  console.log(data.detail.error.message);
+},
+_updateVue: function(e){
+  console.log(this.currentVue);
+  console.log(e);
+
+  if (Object.keys(this.currentVue).length === 0){
+    console.log("vue vide");
+  }else{
+    // RECHERCHE DES VOCABULAIRES SUR LOV.OKFN.ORG this.url='http://lov.okfn.org/dataset/lov/api/v2/vocabulary/search?q='+this.currentVue; //+'&lang=French'
+    if( this.currentVue == "doap"){
+      //  this.url='http://usefulinc.com/ns/doap#';
+      this.urlVocab = 'doap.rdf'
+    }else if( this.currentVue == "foaf"){
+      this.urlVocab = 'foaf.rdf'
+      //  this.url='http://xmlns.com/foaf/spec/index.rdf';
+    }
+    this.$.getVocab.generateRequest();
+  }
+},
+/*_vocabLoaded: function(data){
+console.log("vocabchanged");
+console.log(data);
+}*/    sendUpdate: function (e){
+console.log(e.target.id);
+this.nextPage=e.target.id;
+this.sujet = this.afficheLocalName(this.currentNode);
+console.log(this.sujet);
+console.log(this.urlUpdate);
+this.options = this.computeUpdate(this.sujet, this.propriete, this.objet,this.graphe);
+console.log(this.options);
+this.$.ajaxupdate.generateRequest();
+},
+computeUpdate: function(sujet,propriete,objet,graphe){
+  this.urlUpdate = [this.url,this.ds,"update"].join('/');
+  //formatage du sujet en node rdf : remplace espace par _ et premier caractère en maj
+  sujet = sujet.trim().split(" ").join("_");
+  sujet = sujet.substr(0, 1).toUpperCase() + sujet.substr(1);
+  this.sujet = sujet;
+  propriete = propriete.trim();
+  propriete = propriete.trim().split(" ").join("_");
+  propriete = propriete.substr(0, 1).toLowerCase() + propriete.substr(1);
+  objet = objet.trim();
+  if (objet.indexOf(' ') >= 0){
+    this.$.literal.checked = true;
+  }
+  var literal = this.$.literal.checked;
+
+  var propSend = "";
+  if ((propriete.indexOf(":") !== -1)){
+    // == si la propriete contient déjà un préfixe
+    propSend = '<'+propriete+'>';
+  }else{
+    "smag:"+propriete;
+  }
+
+
+
+  switch(propriete) {
+    case "type":
+    propSend="rdf:type";
+    break;
+    case "hasPart":
+    propSend="dcterms:hasPart";
+    break;
+    case "isPartOf":
+    propSend="dcterms:isPartOf";
+    break;
+    case "subClassOf":
+    propSend="rdfs:subClassOf";
+    break;
+    case "sameAs":
+    propSend="owl:sameAs";
+    break;
+    case "label":
+    propSend = "rdfs:label";
+    break;
+    default:
+    //propSend = "smag:"+propriete;
+  }
+
+
+  var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+  update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+  update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+  update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+  update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
+  update += "PREFIX doap: <http://usefulinc.com/ns/doap#> \n"
+  update += "INSERT DATA { \n";
+  if (graphe != ""){
+    update += "GRAPH "+graphe+"{ \n";
+  }
+  if(literal){
+    objet = '"'+objet+'"';
+    update += "smag:"+sujet+"   "+propSend+"   "+objet+" . \n";
+
+  }else{
+    update += "smag:"+sujet+"   "+propSend+"   smag:"+objet+" . \n";
+  }
+  if (graphe != ""){
+    update += "  } \n";
+  }
+  update += "  } \n";
+  console.log(update);
+  this.requete=update;
+  return {update: update};
+},
+afficheLocalName: function(node){
+  var valSplit ;
+  if(node == undefined){
+    valSplit = this.localName; //.toUpperCase();
+  }else{
+    if (node.type == "literal"){
+      valSplit = '" '+node.value+' "';
+      /*  if (node.value.startsWith("http://")){
+      valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
+    }*/
+  }else{
+    valSplit = node.value.split("#")[1];
+    if (valSplit == undefined){
+      valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+    }
+  }
+}
+return valSplit;
+},
+handleResponse: function(data){
+  var html=data.detail.response.getElementsByTagName("html")[0];
+  var body=html.getElementsByTagName("body")[0];
+  var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
+  this.result=resultat;
+  //    				console.log(this.result);
+  var nb=this.nb+1;
+  this.dispatch('update_nb_maj', nb);
+  console.log(this.nextPage);
+  if (this.nextPage == "sendRun"){
+    var node = {};
+    node.value = "http://smag0.blogspot.fr/NS#"+this.sujet;
+    node.type = "uri";
+    this.dispatch('setCurrentNode', node);
+    // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+    page.redirect("/detail");
+  }
+},
+
+});
+
+</script>
+
+</dom-module>

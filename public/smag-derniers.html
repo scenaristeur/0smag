@@ -7,11 +7,12 @@
 <dom-module id="smag-derniers">
   <template>
 
-    <span on-tap="_showViz"><b>Tout</b> </span>
     <span hidden$=[[!hasData(derniers)]]>
-      ou derniers noeuds cliqués : <b>
+      derniers : <b>
         <template is="dom-repeat" items="{{derniers}}" as="dernier">
-          <item on-tap="_showDetail" id="{{dernier.value}}">{{afficheLocalName(dernier)}}, </item>
+        <!--  <item on-tap="_showDetail" id="{{dernier.value}}">-->
+            <paper-button raised on-tap="_showDetail" id="{{dernier.value}}">{{afficheLocalName(dernier)}}</paper-button>
+          <!--</item>-->
         </template>
         <b>
       </span>
@@ -52,9 +53,7 @@
       // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
       page.redirect("/detail");
     },
-    _showViz: function(){
-      page.redirect("/visualisation");
-    },
+
     afficheLocalName: function(node){
      // console.log(node);
       var valSplit ;
@@ -67,7 +66,9 @@
           valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
         }*/
       }else{
-        valSplit = node.value.split("#")[1];
+        if (node.value != undefined){
+          valSplit = node.value.split("#")[1];
+        }
         if (valSplit == undefined){
           valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
         }

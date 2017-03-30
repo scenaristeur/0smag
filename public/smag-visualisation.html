@@ -12,10 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
-
-<link rel="import" href="smag-derniers.html">
-<link rel="import" href="smag-filtre.html">
-
+<link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 
 
 <dom-module id="smag-visualisation">
@@ -24,6 +21,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style>
   :host {
     display: block;
+  }
+  paper-button {
+    text-transform: none;
   }
   table {
     font-family: arial, sans-serif;
@@ -81,8 +81,8 @@ debounce-duration="300">
 
 <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
 <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
-<smag-derniers></smag-derniers>
-<smag-filtre></smag-filtre>
+<!--<smag-derniers></smag-derniers>-->
+<!--<smag-filtre></smag-filtre>-->
 
 <!--<paper-input label="Filtre : ne pas afficher"></paper-input> -->
 <!--    <paper-button raised>Sauvegarder</paper-button>-->
@@ -97,51 +97,66 @@ debounce-duration="300">
         <th>{{item}}</th>
       </template>
     </tr>
-    <template is="dom-repeat" items="{{results}}">
+    <template is="dom-repeat" items="{{reverso(results)}}">
       <tr>
         <td on-tap="showDetailSujet">
-          <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
+          <!--<div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>-->
+          <paper-button  hidden$={{prefixes}} raised >{{afficheLocalName(item.Sujet)}}</paper-button>
           <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
         </td>
         <td on-tap="showDetailPredicat">
           <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
           <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
         </td>
-        <td on-tap="showDetailObjet">
-          <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-          <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-        </td>
-      </tr>
-      <tr hidden$={{!modifications}}>
-        <td colspan="3">
-          <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
-          <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button>
-        </td>
-      </tr>
-    </template>
-  </table>
+        <td >
+          <div hidden$={{prefixes}}>
+            <paper-button   hidden$="{{literalNode(item.Objet)}}" raised on-tap="showDetailObjet" >{{afficheLocalName(item.Objet)}}</paper-button> <!--hidden$={{prefixes}}-->
+            <div  hidden$="{{!literalNode(item.Objet)}}" raised >{{afficheLocalName(item.Objet)}}</div> <!--hidden$={{prefixes}} --></div>
+            <div hidden$={{!prefixes}} on-tap="showDetailObjet"><h6>{{item.Objet.value}}</h6></div>
+          </td>
+        </tr>
+        <tr hidden$={{!modifications}}>
+          <td colspan="3">
+            <!--  <paper-button item="{{item}}" raised on-tap="_modif">Modif</paper-button>
+            <paper-button item="{{item}}" raised on-tap="_supp">X</paper-button> -->
+            <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
+            <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
+          </td>
+        </tr>
+      </template>
+    </table>
+  </div>
+
+  <paper-input label="Requête" value="{{query}}"></paper-input>
+  <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
+
+  <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+    <h2>Modification</h2>
+      <paper-dialog-scrollable>
+    <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
+    <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
+    <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
+    <paper-toggle-button id="literal">Literal</paper-toggle-button>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+  <paper-button dialog-dismiss  raised>Annuler</paper-button>
+  <paper-button dialog-confirm autofocus  raised  item="{{item}}" on-tap="_sendChangement">OK</paper-button>
 </div>
+  </paper-dialog>
 
-<paper-input label="Requête" value="{{query}}"></paper-input>
-<paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
-
-<paper-dialog id="dialog">
-  <h2>Modification</h2>
-  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
-  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
-  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
-  <paper-toggle-button id="literal">Literal</paper-toggle-button>
-  <paper-button item="{{item}}" raised on-tap="_sendChangement">OK</paper-button>
-</paper-dialog>
-
-<paper-dialog id="suppDialog">
-  <h2>Suppression</h2>
-  <p>Confirmez vous la suppression du triplet suivant : </p>
-  <p>{{sujetTemp.localName}}</p>
-  <p>{{proprieteTemp.localName}}</p>
-  <p>{{objetTemp.localName}}</p>
-  <paper-button item="{{item}}" raised on-tap="_suppTriplet">OK</paper-button>
-</paper-dialog>
+  <paper-dialog id="suppDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+    <h2>Suppression</h2>
+      <paper-dialog-scrollable>
+    <p>Confirmez vous la suppression du triplet suivant : </p>
+    <p>{{sujetTemp.localName}}</p>
+    <p>{{proprieteTemp.localName}}</p>
+    <p>{{objetTemp.localName}}</p>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+  <paper-button dialog-dismiss autofocus raised>Annuler</paper-button>
+  <paper-button dialog-confirm   raised  item="{{item}}" on-tap="_suppTriplet">OK</paper-button>
+</div>
+  </paper-dialog>
 </template>
 
 <script>
@@ -186,7 +201,7 @@ debounce-duration="300">
         notify: true
       },
       limite : {
-        value: 100,
+        value: 1000,
         notify: true
       },
       output : {
@@ -226,6 +241,13 @@ debounce-duration="300">
         type: String
       }
     },
+    reverso: function(array1){
+      if(array1 != null){
+      console.log(array1);
+      var rArray=array1.reverse();
+      console.log(rArray);
+      return rArray;}
+    },
     setCurrentNode: function(node){
       const currentNode = node;
       if (currentNode){
@@ -234,7 +256,12 @@ debounce-duration="300">
     },
     computedUrl: function(url,ds,action){
       this.results = null;
-      return [url,ds,action].join('/');
+      console.log(ds);
+      if(ds != undefined){
+        return [url,ds,action].join('/');
+      }else{
+        return [url,action].join('/');
+      }
     },
     computedOptions: function(graphe,limite,output){
       if (graphe != ""){
@@ -243,7 +270,7 @@ debounce-duration="300">
         this.query = 'SELECT * WHERE {?Sujet ?Predicat ?Objet}'
       }
       var queryLimite=this.query+" LIMIT "+limite;
-      //  console.log(queryLimite);
+      console.log(queryLimite);
       return{query: queryLimite, output: output};
     },
     /* SUPPRESSION D'UN TRIPLET*/
@@ -360,6 +387,8 @@ debounce-duration="300">
       console.log(data.detail.error.message);
     },
     _nbChanged : function(){
+      console.log(this.query);
+      console.log(this.options);
       this.$.ajaxGet.generateRequest();
     },
     splitDecompose: function(binding){
@@ -394,6 +423,9 @@ debounce-duration="300">
       }
     }
     return valSplit;
+  },
+  literalNode: function(node){
+    return node.type == "literal";
   },
   /**
   * recupere et parse la reponse du serveur

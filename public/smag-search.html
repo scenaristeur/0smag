@@ -6,23 +6,27 @@
 
 <dom-module id="smag-search">
   <template>
-       <paper-icon-button  on-tap="open_recherche" icon="search"></paper-icon-button>
+    <paper-icon-button  on-tap="open_recherche" icon="search"></paper-icon-button>
 
-    <paper-dialog id="searchDialog">
-  <h2>Rechercher</h2>
-  <paper-input label="Recherche" type="search" value="{{sujetSearch}}"></paper-input>
- <!-- <paper-input label="Sujet" value="{{sujetSearch}}"></paper-input>
-  <paper-input label="propriete" value="{{proprieteSearch}}"></paper-input>
-  <paper-input label="Objet" value="{{objetSearch}}"></paper-input>-->
-  <paper-button  raised  item="{{item}}" on-tap="_search" >Rechercher</paper-button>
-</paper-dialog>
+    <paper-dialog id="searchDialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+      <h2>Rechercher</h2>
+      <paper-input label="Recherche" id="sujetSearchInput" type="search" value="{{sujetSearch}}"></paper-input>
+      <!-- <paper-input label="Sujet" value="{{sujetSearch}}"></paper-input>
+      <paper-input label="propriete" value="{{proprieteSearch}}"></paper-input>
+      <paper-input label="Objet" value="{{objetSearch}}"></paper-input>-->
+      <!--<paper-button  raised  item="{{item}}" on-tap="_search" >Rechercher</paper-button>-->
+          <div class="buttons">
+  <paper-button dialog-dismiss raised>Annuler</paper-button>
+  <paper-button dialog-confirm autofocus    raised   on-tap="_search">Rechercher</paper-button>
+</div>
+    </paper-dialog>
   </template>
 
   <script>
   Polymer({
     is: 'smag-search',
     behaviors: [ ReduxBehavior ],
-            actions:{
+    actions:{
       setCurrentNode: function(node){
         return {
           type: 'SET_CURRENT_NODE',
@@ -33,32 +37,36 @@
     properties: {
 
     },
-        setCurrentNode: function(node){
+    setCurrentNode: function(node){
       const currentNode = node;
       if (currentNode){
         this.dispatch('setCurrentNode', currentNode);
       }
     },
     open_recherche: function() {
-    console.log("rec");
-     this.$.searchDialog.toggle();
-  },
-  _search: function(){
-    console.log(this.sujetSearch);
-    var search = this.sujetSearch;
-if((search != undefined) && (search.trim().length> 0)){
-  search = search.trim();
-var node = {};
-node.value = "http://smag0.blogspot.fr/NS#"+search;
-node.type = "uri";
-      this.setCurrentNode(node);
-      console.log(node);
-      // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
-      page.redirect("/detail");}
-   this.$.searchDialog.toggle();
-  }
-  });
+      console.log("rec");
+      //  this.$.sujetSearchInput.focus();
+      document.getElementById('sujetSearchInput').$.input.focus();
+      console.log(this.$.sujetSearchInput);
+      this.$.searchDialog.toggle();
 
-  </script>
+    },
+    _search: function(){
+      console.log(this.sujetSearch);
+      var search = this.sujetSearch;
+      if((search != undefined) && (search.trim().length> 0)){
+        search = search.trim();
+        var node = {};
+        node.value = "http://smag0.blogspot.fr/NS#"+search;
+        node.type = "uri";
+        this.setCurrentNode(node);
+        console.log(node);
+        // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+        page.redirect("/detail");}
+        this.$.searchDialog.toggle();
+      }
+    });
 
-</dom-module>
+    </script>
+
+  </dom-module>

@@ -1,0 +1,276 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<!-- inspiration : http://visjs.org/docs/network/ -->
+<link rel="import" href="redux-store.html">
+<script type="text/javascript" src="bower_components/vis/dist/vis.js"></script>
+<link href="bower_components/vis/dist/vis.css" rel="stylesheet" type="text/css" />
+
+
+
+<dom-module id="smag-vis" donnees='{{donnees}}'>
+<template>
+
+<style type="text/css">
+#mynetwork {
+  width: 100%;
+  height: 400px;
+  border: 1px solid lightgray;
+}
+</style>
+
+
+<!--
+<h3>Nous avons [[nodes.length]] Smag vis.</h3>
+<h3>Nous avons [[edges.length]] Smag vis.</h3>-->
+
+<paper-button raised on-tap='resetAllNodes'>Clear</paper-button>
+<paper-button raised on-tap='resetOldNodes'>Clear sauf dernier</paper-button>
+<div id="mynetwork"></div>
+
+</template>
+
+<script>
+Polymer({
+is: 'smag-vis',
+behaviors: [ ReduxBehavior ],
+actions:{
+  setCurrentNode: function(node){
+    return {
+      type: 'SET_CURRENT_NODE',
+      currentNode: node
+    }
+  },
+},
+properties: {
+  currentNode:{
+    type: Object,
+    statePath: 'currentNode',
+    observer: 'updateDetail'
+  },
+  nodes: {
+    type: Array,
+    value:["df"]
+  },
+  edges: {
+    type: Array,
+    value: ["ed"]
+  },
+  donnees: {
+    type: Array,
+    observer: '_donneesChanged'
+  }
+  /*statements: {
+  type: Array,
+  statePath: 'statements'
+},
+statementCount: {
+type: Number,
+computed: 'computedStatementCount(statements)'
+}*/
+},
+_nodeSelected: function(params){
+//  console.log(params);
+var node = {};
+this.dispatch('setCurrentNode', node);
+},
+attached: function(){
+var app=this;
+this.nodes = new vis.DataSet([
+  /*  {id: 1, label: 'Node 1'},
+  {id: 2, label: 'Node 2'},
+  {id: 3, label: 'Node 3'},
+  {id: 4, label: 'Node 4'},
+  {id: 5, label: 'Node 5'}*/
+]);
+this.edges = new vis.DataSet([
+  /*  {from: 1, to: 3},
+  {from: 1, to: 2},
+  {from: 2, to: 4},
+  {from: 2, to: 5}*/
+]);
+
+// create a network
+var container = document.getElementById('mynetwork');
+
+// provide the data in the vis format
+var data = {
+  nodes: this.nodes,
+  edges: this.edges
+};
+    var options = {
+      interaction: {
+        navigationButtons: true,
+        keyboard: true
+      }};
+
+// initialize your network!
+var network = new vis.Network(container, data, options);
+network.on("select", function (params) {
+//  console.log('select Event:', params);
+  var clicNoeudIndice = params.nodes[0];
+//  console.log(clicNoeudIndice);
+  var noeud = app.nodes.get(clicNoeudIndice);
+//  console.log(noeud);
+  var node = {};
+  node.type = 'uri';
+  node.value = noeud.value;
+  app.dispatch('setCurrentNode', node);
+});
+
+/*network.on("click", function (params) {
+params.event = "[original event]";
+//  document.getElementById('eventSpan').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);
+this._nodeSelected(params);
+});*/
+
+//console.log(this.donnees);
+},
+
+_donneesChanged: function(newDonnees, oldDonnees){
+if(newDonnees.length > 0){
+//  console.log(newDonnees);
+//  console.log(this.currentNode);
+  var label = this.computeLocalName(this.currentNode);
+  var node = this.exist(label);
+  if (this.isEmptyObject(node)){
+    node.id = this.nodes.length+1;
+    node.label = label;
+    node.value = this.currentNode.value;
+    this.nodes.add(node);//this.push('nodes', node);
+  }
+
+  //console.log(this.nodes);
+
+  for (var i=0;i<newDonnees.length;i++){
+    var link = newDonnees[i];
+  //  console.log(link);
+    var suj = link.Sujet;
+    var prop = link.Predicat;
+    var obj = link.Objet;
+    if (suj == undefined ){
+      var propLoc = this.computeLocalName(prop);
+      var objLoc = this.computeLocalName(obj);
+      var nodeObj = this.exist(objLoc);
+      if (this.isEmptyObject(nodeObj)){
+        nodeObj.id = this.nodes.length+1;
+        nodeObj.label = objLoc;
+        nodeObj.value = obj.value;
+        this.nodes.add(nodeObj);
+      }
+
+    //  console.log(this.edges);
+      var trouve = false;
+      this.edges.forEach(function(element) {
+    //    console.log(element);
+
+        if ( (element.from == node.id) && (element.to == nodeObj.id) && (element.arrows == 'to') && (element.label == propLoc) ){
+          trouve = true;
+        }
+
+      });
+      if (!trouve){
+        var edge= {from: node.id, to: nodeObj.id, arrows:'to', label: propLoc, font: {align: 'middle'}};
+        this.edges.add(edge);
+      }
+
+
+    }
+    else if(obj == undefined){
+      var propLoc = this.computeLocalName(prop);
+      var sujLoc = this.computeLocalName(suj);
+    //  console.log(propLoc+" "+sujLoc);
+      var nodeSuj = this.exist(sujLoc);
+      if (this.isEmptyObject(nodeSuj)){
+        nodeSuj.id = this.nodes.length+1;
+        nodeSuj.label = sujLoc;
+        nodeSuj.value = suj.value;
+        this.nodes.add(nodeSuj);
+      }
+
+
+    //  console.log(this.edges);
+      var trouve = false;
+      this.edges.forEach(function(element) {
+      //  console.log(element);
+
+        if ( (element.from == nodeSuj.id) && (element.to == node.id) && (element.arrows == 'to') && (element.label == propLoc) ){
+          trouve = true;
+        }
+
+      });
+      if(!trouve){
+        /*var edge= {from: node.id, to: nodeObj.id, arrows:'to', label: propLoc};
+        this.edges.add(edge);*/
+        var edge= {from: nodeSuj.id, to: node.id, arrows:'to', label: propLoc, font: {align: 'middle'}};
+        this.edges.add(edge);
+      }
+    }
+  }
+}
+
+},
+exist: function(label){
+var trouve={};
+//  console.log(label);
+//console.log(this.nodes._data);
+
+for( var i=1; i<this.nodes.length+1 ;i++){
+  var nodeTemp = this.nodes.get(i);
+  //  console.log(nodeTemp);
+  if (nodeTemp.label == label){
+    trouve = nodeTemp;
+    //  console.log(trouve);
+  }
+}
+return trouve;
+},
+
+
+/*addNode: function() {
+//  var newId = (Math.random() * 1e7).toString(32);
+this.nodes.add({id:newId, label:"I'm new!"});
+//  nodeIds.push(newId);
+}*/
+isEmptyObject: function(obj) {
+for (var key in obj) {
+  if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    return false;
+  }
+}
+return true;
+},
+computeLocalName: function(node){
+if (!this.isEmptyObject(node)){
+  var type = node.type;
+  var prefix = node.value.split("#")[0];
+  var localName =  node.value.split("#")[1];
+  if (localName == undefined){
+    prefix = node.value.substring(0, node.value.lastIndexOf("/") + 1);
+    localName = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+  }else{
+    prefix = prefix+"#";
+  }
+  return localName; //.toUpperCase();
+}else{
+  return "Page introuvable";
+}
+},
+resetAllNodes: function() {
+this.nodes.clear();
+this.edges.clear();
+},
+resetOldNodes: function() {
+this.nodes.clear();
+this.edges.clear();
+this._donneesChanged(this.donnees);
+}
+
+
+/*
+computedStatementCount: function(statements) {
+return statements.length;
+}*/
+});
+
+</script>
+
+</dom-module>

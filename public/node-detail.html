@@ -9,6 +9,16 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 
 
+<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="bower_components/paper-styles/color.html">
+<link rel="import" href="bower_components/paper-styles/demo-pages.html">
+<link rel="import" href="bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
+
+
 <link rel="import" href="bower_components/social-links/twitter-link.html">
 <link rel="import" href="bower_components/social-links/vimeo-link.html">
 <link rel="import" href="bower_components/social-links/skype-link.html">
@@ -25,50 +35,56 @@
 
 
 <link rel="import" href="redux-store.html">
+<link rel="import" href="smag-projet.html">
+<link rel="import" href="smag-personne.html">
+<link rel="import" href="smag-vis.html">
 
 
 <dom-module id="node-detail">
-  <template>
-  <style include="shared-styles"></style>
-  <style>
-  :host {
-    display: block;
-  }
-  table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    /*  width: 100%;*/
-  }
+<template>
+<style include="shared-styles"></style>
+<style>
+:host {
+  display: block;
+}
+paper-button {
+  text-transform: none;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  /*  width: 100%;*/
+}
 
-  td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-    /* width: 30%;*/
-    /*  min-width: 200px;*/
-  }
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  /* width: 30%;*/
+  /*  min-width: 200px;*/
+}
 
-  tr:nth-child(even) {
-    background-color: #dddddd;
-  }
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
 
-  /* .search-table-outter {border:2px solid red;}*/
-  .search-table{table-layout: fixed; margin:40px auto 0px auto; }
-  .search-table, td, th{border-collapse:collapse; border:1px solid #777;}
-  /*th{padding:20px 7px; font-size:15px; color:#444; background:#66C2E0;}
-  td{padding:5px 10px; height:35px;}*/
+/* .search-table-outter {border:2px solid red;}*/
+.search-table{table-layout: fixed; margin:40px auto 0px auto; }
+.search-table, td, th{border-collapse:collapse; border:1px solid #777;}
+/*th{padding:20px 7px; font-size:15px; color:#444; background:#66C2E0;}
+td{padding:5px 10px; height:35px;}*/
 
-  .search-table-outter { overflow-x: scroll; }
-  </style>
+.search-table-outter { overflow-x: scroll; }
+</style>
 
-  <iron-ajax
-  id="ajaxGet"
-  url="{{urlDetail}}"
-  params="{{options}}"
-  handle-as="json"
-  on-response="handleResponse"
-  on-error="ajaxError"
-  debounce-duration="300">
+<iron-ajax
+id="ajaxGet"
+url="{{urlDetail}}"
+params="{{options}}"
+handle-as="json"
+on-response="handleResponse"
+on-error="ajaxError"
+debounce-duration="300">
 </iron-ajax>
 
 <iron-ajax
@@ -83,105 +99,150 @@ on-error="ajaxErrorChange"
 debounce-duration="300">
 </iron-ajax>
 
-<h3>{{localName}} <paper-icon-button icon="social:share" on-tap="_partager" title="Partager"></paper-icon-button></h3>
+<h3>{{localName}} <paper-icon-button icon="social:share" on-tap="_partager" title="Partager"></paper-icon-button>
+<!--<template is="dom-repeat" items="{{vues}}" as="vue">
+<div> {{afficheLocalName(vue)}}
+</div>
+</template>-->
 <paper-icon-button icon="create" on-tap="_openAdd" item="{{currentNode}}" title="Modifier ce noeud"></paper-icon-button>
+
+<!--A mettre en place si plusieurs vues <paper-dropdown-menu label="Vue" hidden$={{!showListVue}} style="width:20em">-->
+<paper-dropdown-menu label="Vue" hidden$={{!showListVue}}  style="width:20em">
+<paper-listbox class="dropdown-content" id="vueListBox" style="width:20em" on-iron-select="_vueSelected" > <!--selected="1"-->
+  <template is="dom-repeat" items="[[vues]]" as="vue">
+    <paper-item id={{vue.value}}>{{afficheLocalName(vue)}}</paper-item>
+  </template>
+</paper-listbox>
+</paper-dropdown-menu>
+</h3>
+
+<smag-vis donnees="{{results}}"></smag-vis>
+
+
 <!--
+A METTRE PLUS TARD
 
 
-  A METTRE PLUS TARD 
-
-
-  <paper-icon-button icon="av:loop" on-tap="_recharger" title="Recharger (change de couleur si une nouvelle info est disponible)"></paper-icon-button>
+<paper-icon-button icon="av:loop" on-tap="_recharger" title="Recharger (change de couleur si une nouvelle info est disponible)"></paper-icon-button>
 <paper-icon-button icon="create" on-tap="_changeNom" title="Modifier ce noeud"></paper-icon-button>
 <paper-icon-button icon="social:person-add" on-tap="_newActor" title="Ajouter un acteur"></paper-icon-button>
 <paper-icon-button icon="maps:add-location" on-tap="_newLocation" title="Ajouter un lieu"></paper-icon-button>
 <paper-icon-button icon="icons:event" on-tap="_newEvent" title="Ajouter un événement"></paper-icon-button>
 -->
 
+
+<smag-projet hidden$={{!showProjetVue}}></smag-projet>
+<smag-personne hidden$={{!showPersonneVue}}></smag-personne>
+<!-- hidden$={{!showPersonneVue}}-->
+
+
 <paper-toggle-button checked="{{prefixes}}">Avec Prefixes</paper-toggle-button>
 <paper-toggle-button checked="{{modifications}}">Avec Modifications</paper-toggle-button>
-<smag-derniers></smag-derniers>
-<smag-filtre></smag-filtre>
+
+<!--<smag-filtre></smag-filtre>-->
 
 <div class="search-table-outter wrapper">
-  <table class="search-table inner">
+<table class="search-table inner">
 
-    <!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
-    <tr></tr>
-    <tr>
-     <!-- <th></th>-->
-      <!-- PROBLEME CAR PREDICAT ET OBJET ARRIVENT AVANT SUJET
-      <template is="dom-repeat" items="{{head}}">
-      <th>{{item}}</th>
-    </template>-->
-    <th>Sujet </th><th>Predicat</th><th>Objet</th>
+  <!-- voir aussi https://saulis.github.io/iron-data-table/demo/columns.html -->
+  <tr></tr>
+  <tr>
+    <!-- <th></th>-->
+    <!-- PROBLEME CAR PREDICAT ET OBJET ARRIVENT AVANT SUJET
+    <template is="dom-repeat" items="{{head}}">
+    <th>{{item}}</th>
+  </template>-->
+  <th>Sujet </th><th>Predicat</th><th>Objet</th>
+</tr>
+<template is="dom-repeat" items="{{reverse(results)}}">
+  <tr>
+    <!-- <td>
+    <div hidden$={{item.open}}><paper-icon-button icon="lock-open" title="Fermer" item="{{item}}"on-tap="_close"></paper-icon-button></div>
+    <div hidden$={{!item.open}}><paper-icon-button icon="lock-outline" title="Ouvrir" item="{{item}}"on-tap="_open"></paper-icon-button></div>
+  </td>-->
+  <td on-tap="showDetailSujet">
+    <!--<div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>    -->
+    <paper-button  hidden$={{prefixes}} raised >{{afficheLocalName(item.Sujet)}}</paper-button>
+    <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
+  </td>
+  <td on-tap="showDetailPredicat">
+    <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
+    <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
+  </td>
+  <td >
+    <div hidden$={{prefixes}}>
+      <paper-button   hidden$="{{literalNode(item.Objet)}}" raised on-tap="showDetailObjet" >{{afficheLocalName(item.Objet)}}</paper-button> <!--hidden$={{prefixes}}-->
+      <div  hidden$="{{!literalNode(item.Objet)}}" raised >{{afficheLocalName(item.Objet)}}</div> <!--hidden$={{prefixes}} --></div>
+      <div hidden$={{!prefixes}} on-tap="showDetailObjet"><h6>{{item.Objet.value}}</h6></div>
+    </td>
   </tr>
-  <template is="dom-repeat" items="{{results}}">
-    <tr>
-     <!-- <td>
-        <div hidden$={{item.open}}><paper-icon-button icon="lock-open" title="Fermer" item="{{item}}"on-tap="_close"></paper-icon-button></div>
-        <div hidden$={{!item.open}}><paper-icon-button icon="lock-outline" title="Ouvrir" item="{{item}}"on-tap="_open"></paper-icon-button></div>
-      </td>-->
-      <td on-tap="showDetailSujet">
-        <div hidden$={{prefixes}}>{{afficheLocalName(item.Sujet)}}</div>
-        <div hidden$={{!prefixes}}><h6>{{item.Sujet.value}}</h6></div>
-      </td>
-      <td on-tap="showDetailPredicat">
-        <div hidden$={{prefixes}}>{{afficheLocalName(item.Predicat)}}</div>
-        <div hidden$={{!prefixes}}><h6>{{item.Predicat.value}}</h6></div>
-      </td>
-      <td on-tap="showDetailObjet">
-        <div hidden$={{prefixes}}>{{afficheLocalName(item.Objet)}}</div>
-        <div hidden$={{!prefixes}}><h6>{{item.Objet.value}}</h6></div>
-      </td>
-    </tr>
-    <tr hidden$={{!modifications}}>
-      <td colspan="4">
-        <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>
-        <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
-        <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
-      </td>
-    </tr>
-  </template>
+  <tr hidden$={{!modifications}}>
+    <td colspan="4">
+      <!--    <paper-icon-button icon="content-copy" title="Dupliquer ce triplet." item="{{item}}"on-tap="_duplication"></paper-icon-button>-->
+      <paper-icon-button icon="create" title="Modifier" item="{{item}}" on-tap="_modif"></paper-icon-button>
+      <paper-icon-button icon="delete" title="Supprimer" item="{{item}}"on-tap="_supp"></paper-icon-button>
+    </td>
+  </tr>
+</template>
 </table>
 </div>
 
 <paper-input label="Requête" value="{{query}}"></paper-input>
 <paper-input label="nombre d'eléments à afficher" value="{{limite}}"></paper-input>
 
-<paper-dialog id="addDialog">
-  <h2>Ajout d'une information</h2>
-  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
-  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
-  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
-  <paper-toggle-button id="literal">Literal</paper-toggle-button>
-  <paper-button  raised  item="{{item}}" on-tap="_addTriplet" >OK</paper-button>
+
+
+
+<paper-dialog id="addDialog"   entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+<h2>Ajout d'une information</h2>
+  <paper-dialog-scrollable>
+<paper-input label="Sujet" type="search" value="{{sujetTemp.localName}}"   style="width:20em"></paper-input>
+<paper-input label="propriete" type="search" value="{{proprieteTemp.localName}}"></paper-input>
+<paper-input label="Objet" type="search" value="{{objetTemp.localName}}"></paper-input>
+<paper-toggle-button id="literalAdd">Literal</paper-toggle-button>
+<!--
+<paper-button  raised  item="{{item}}" on-tap="_addTriplet" >OK</paper-button>-->
+  </paper-dialog-scrollable>
+    <div class="buttons">
+  <paper-button dialog-dismiss raised>Annuler</paper-button>
+  <paper-button dialog-confirm autofocus    raised  item="{{item}}" on-tap="_addTriplet">OK</paper-button>
+</div>
 </paper-dialog>
 
-<paper-dialog id="dialog">
-  <h2>Modification</h2>
-  <paper-input label="Sujet" value="{{sujetTemp.localName}}"></paper-input>
-  <paper-input label="propriete" value="{{proprieteTemp.localName}}"></paper-input>
-  <paper-input label="Objet" value="{{objetTemp.localName}}"></paper-input>
-  <paper-toggle-button id="literal">Literal</paper-toggle-button>
-  <paper-button  raised  item="{{item}}" on-tap="_sendChangement" >OK</paper-button>
+<paper-dialog id="dialog"   entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+<h2>Modification</h2>
+<paper-dialog-scrollable>
+<paper-input type="search" label="Sujet" id="sujetModif" value="{{sujetTemp.localName}}"   style="width:20em"></paper-input>
+<paper-input type="search" label="propriete" id="propModif" value="{{proprieteTemp.localName}}"></paper-input>
+<paper-input type="search" label="Objet" id="objetModif" value="{{objetTemp.localName}}"></paper-input>
+<paper-toggle-button id="literal">Literal</paper-toggle-button>
+<!--  <paper-button  raised  item="{{item}}" on-tap="_sendChangement" >OK</paper-button>-->
+  </paper-dialog-scrollable>
+  <div class="buttons">
+  <paper-button dialog-dismiss raised>Annuler</paper-button>
+  <paper-button dialog-confirm autofocus    raised  item="{{item}}" on-tap="_sendChangement">OK</paper-button>
+</div>
 </paper-dialog>
 
-<paper-dialog id="suppDialog">
-  <h2>Suppression</h2>
-  <p>Confirmez vous la suppression du triplet suivant : </p>
-  <p>{{sujetTemp.localName}}</p>
-  <p>{{proprieteTemp.localName}}</p>
-  <p>{{objetTemp.localName}}</p>
-  <paper-button  raised  item="{{item}}" on-tap="_suppTriplet">OK</paper-button>
+<paper-dialog id="suppDialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+<h2>Suppression</h2>
+<p>Confirmez vous la suppression du triplet suivant : </p>
+<p>{{sujetTemp.localName}}</p>
+<p>{{proprieteTemp.localName}}</p>
+<p>{{objetTemp.localName}}</p>
+<!--  <paper-button  raised  item="{{item}}" on-tap="_suppTriplet">OK</paper-button>-->
+  <div class="buttons">
+  <paper-button dialog-dismiss autofocus raised>Annuler</paper-button>
+  <paper-button dialog-confirm   raised  item="{{item}}" on-tap="_suppTriplet">OK</paper-button>
+</div>
 </paper-dialog>
 
-<paper-dialog id="share">
-  <h2>Partager</h2>
+<paper-dialog id="share" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+<h2>Partager</h2>
 
-  <p>{{shareUrl}}</p>
+<p>{{shareUrl}}</p>
 <twitter-link
- href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
+href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
 <a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{shareUrl}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
 
 <facebook-link href="https://www.facebook.com/sharer/sharer.php?u={{shareUrl}}" height="15px"></facebook-link>
@@ -198,415 +259,604 @@ debounce-duration="300">
 <github-link href="https://www.github.com/@bkawk" height="15px"></github-link>
 <instagram-link href="https://www.instagram.com/@bkawk" height="15px"></instagram-link>
 <dribbble-link href="https://www.dribbble.com/@bkawk" height="15px"></dribbble-link> -->
-  <paper-button  raised on-tap="_closeShare">OK</paper-button>
+<!-- <paper-button  raised on-tap="_closeShare">OK</paper-button>-->
+    <div class="buttons">
+  <paper-button dialog-dismiss raised>Annuler</paper-button>
+  <paper-button dialog-confirm autofocus   raised  on-tap="_closeShare">OK</paper-button>
+</div>
 </paper-dialog>
 
+<!-- A Supprimer qd les vues de pages sont ok
+<template is="dom-repeat" items="{{vues}}" as="vue">
+<div>First name: <span>{{vue.value}}</span></div>
+<div>Last name: <span>{{vue.type}}</span></div>
+{{vues}}
+{{vue}}
+</template>-->
 </template>
 
 <script>
 Polymer({
-  is: 'node-detail',
-  behaviors: [ ReduxBehavior ],
-  actions:{
-    setCurrentNode: function(node){
-      return {
-        type: 'SET_CURRENT_NODE',
-        currentNode: node
-      }
-    },
-    update_nb_maj: function(nb){
-      return {
-        type: 'UPDATE_NB_MAJ',
-        nb: nb
-      }
+is: 'node-detail',
+behaviors: [ ReduxBehavior ],
+actions:{
+  setCurrentNode: function(node){
+    return {
+      type: 'SET_CURRENT_NODE',
+      currentNode: node
     }
   },
-  properties: {
-    currentNode:{
-      type: Object,
-      statePath: 'currentNode',
-      observer: 'updateDetail'
-    },
-    localName:{
-      type: String,
-      computed: 'computeLocalName(currentNode)'
-    },
-    url:{
-      type: Object,
-      statePath: 'url'
-    },
-    ds:{
-      type: String,
-      statePath: 'ds'
-    },
-    graphe: {
-      type: String,
-      statePath: 'graphe'
-    },
-    urlDetail:{
-      type: String,
-      //  computed: 'computeUrlDetail(url,ds,action)'
-    },
-    options: {
-      //  computed: 'computedOptions(graphe,limite,output)'
-    },
-    limite : {
-      value: 100,
-      notify: true
-    },
-    output : {
-      value: 'json',
-      notify: true
-    },
-    nb:{
-      type: Number,
-      statePath: 'nb',
-      observer: '_nbChanged'
-    },
-  },
-  isEmptyObject: function(obj) {
-    for (var key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        return false;
-      }
+  setCurrentVue: function(vue){
+    return {
+      type: 'SET_CURRENT_VUE',
+      currentVue: vue
     }
-    return true;
   },
-  computeLocalName: function(node){
-    if (!this.isEmptyObject(node)){
-      var type = node.type;
-      var prefix = node.value.split("#")[0];
-      var localName =  node.value.split("#")[1];
-      if (localName == undefined){
-        prefix = node.value.substring(0, node.value.lastIndexOf("/") + 1);
-        localName = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
-      }else{
-        prefix = prefix+"#";
-      }
-      return localName; //.toUpperCase();
+  update_nb_maj: function(nb){
+    return {
+      type: 'UPDATE_NB_MAJ',
+      nb: nb
+    }
+  }
+},
+properties: {
+  currentNode:{
+    type: Object,
+    statePath: 'currentNode',
+    observer: 'updateDetail'
+  },
+  localName:{
+    type: String,
+    computed: 'computeLocalName(currentNode)'
+  },
+  url:{
+    type: Object,
+    statePath: 'url'
+  },
+  ds:{
+    type: String,
+    statePath: 'ds'
+  },
+  graphe: {
+    type: String,
+    statePath: 'graphe'
+  },
+  urlDetail:{
+    type: String,
+    //  computed: 'computeUrlDetail(url,ds,action)'
+  },
+  options: {
+    //  computed: 'computedOptions(graphe,limite,output)'
+  },
+  limite : {
+    value: 100,
+    notify: true
+  },
+  output : {
+    value: 'json',
+    notify: true
+  },
+  nb:{
+    type: Number,
+    statePath: 'nb',
+    observer: '_nbChanged'
+  },
+  vues: {
+    type: Array,
+    value: [],
+    observer: '_vuesChanged',
+    notify: true
+  },
+  showProjetVue: {
+    type: Boolean,
+    value: false
+  },
+  showPersonneVue: {
+    type: Boolean,
+    value: false
+  }
+},
+literalNode: function(node){
+  if (node== undefined){
+    node = this.currentNode;
+  }
+  return node.type == "literal";
+},
+isEmptyObject: function(obj) {
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      return false;
+    }
+  }
+  return true;
+},
+computeLocalName: function(node){
+  if (!this.isEmptyObject(node)){
+    var type = node.type;
+    var prefix="";
+    if (node.value != undefined){
+      prefix = node.value.split("#")[0];
+    }
+    var localName ="";
+    if( node.value != undefined){
+      localName =  node.value.split("#")[1];
+    }
+    if (localName == undefined){
+      prefix = node.value.substring(0, node.value.lastIndexOf("/") + 1);
+      localName = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
     }else{
-      return "Page introuvable";
+      prefix = prefix+"#";
     }
-  },
-  computeUrlDetail: function(url,ds,action){
-    return [url,ds,action].join('/');
-  },
-  updateDetail: function(){
-    if(this.url != undefined){
-      this.action = "query";
-      this.urlDetail = this.computeUrlDetail(this.url,this.ds,this.action);
-      this.options = this.computedOptions(this.graphe,this.limite,this.output)
+    return localName; //.toUpperCase();
+  }else{
+    return "Page introuvable";
+  }
+},
+computeUrlDetail: function(url,ds,action){
+  return [url,ds,action].join('/');
+},
+updateDetail: function(){
+  if(this.url != undefined){
+    this.action = "query";
+    this.urlDetail = this.computeUrlDetail(this.url,this.ds,this.action);
+    this.options = this.computedOptions(this.graphe,this.limite,this.output)
     //  console.log(this.urlDetail);
     //  console.log(this.options);
-      this.$.ajaxGet.generateRequest();
-    }
-  },
-  computedOptions: function(graphe,limite,output){
-    if (graphe != ""){
-      this.query = 'SELECT * FROM '+graphe+' WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
-    }else{
-      this.query = 'SELECT * WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
-    }
-    var queryLimite=this.query+" LIMIT "+limite;
-    //console.log(queryLimite);
-    return{query: queryLimite, output: output};
-  },
-  /* Recuperation de la reponse */
-  handleResponse:function(data){
-
-    this.head=data.detail.response.head.vars;
-    this.results=data.detail.response.results.bindings;
-    console.log(this.results);
-  },
-
-  /**
-  * en cas d'erreur de la requete
-  */
-  ajaxError : function(data){
-    console.log(data);
-    console.log(data.detail.response);
-    console.log(data.detail.error);
-    console.log(data.detail.error.message);
-  },
-  afficheLocalName: function(node){
-    var valSplit ;
-    if(node == undefined){
-      valSplit = this.localName; //.toUpperCase();
-    }else{
-      if (node.type == "literal"){
-        valSplit = '" '+node.value+' "';
-        /*  if (node.value.startsWith("http://")){
-        valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
-      }*/
-    }else{
-      valSplit = node.value.split("#")[1];
-      if (valSplit == undefined){
-        valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+    this.$.ajaxGet.generateRequest();
+  }
+},
+computedOptions: function(graphe,limite,output){
+  if (graphe != ""){
+    this.query = 'SELECT * FROM '+graphe+' WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
+  }else{
+    this.query = 'SELECT * WHERE { { <'+this.currentNode.value+'> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <'+this.currentNode.value+'>  } }';
+  }
+  var queryLimite=this.query+" LIMIT "+limite;
+  //console.log(queryLimite);
+  return{query: queryLimite, output: output};
+},
+/* Recuperation de la reponse */
+handleResponse:function(data){
+  this.vues = [];
+  this.showListVue = false;
+  this.head=data.detail.response.head.vars;
+  this.results=data.detail.response.results.bindings;
+  //    console.log(this.results);
+  var resultats = this.results;
+  for (var i = 0; i < resultats.length; i++) {
+    // Iterate over numeric indexes from 0 to 5, as everyone expects.
+    //    console.log(resultats[i]);
+    var resultat = resultats[i];
+    var sujet = resultat["Sujet"];
+    var predicat = resultat["Predicat"];
+    var objet = resultat["Objet"];
+    if( ( predicat.value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !this.isEmptyObject(objet) ) {
+      var newVue = {value: objet.value, type:'uri'};
+      this.push('vues', newVue);
+      // Force data system to pick up array mutations
+      var array = this.vues;
+      this.vues = [];
+      this.vues = array;
+      console.log(this.vues);
+      if(this.vues.length>1){
+        this.showListVue = true;
+        this.$.vueListBox.selected = null;
+      }else{
+        this.showListVue = false;
+        this.$.vueListBox.selected = 1;
       }
+
+    }
+    /*   var sujetType = sujet.type;
+    var predicatType = predicat["type"];
+    var objetType = objet["type"];
+    var sujetValue = sujet["value"];
+    var predicatValue = predicat['value'];
+    var objetValue = objet['value'];
+    console.log(objetValue);*/
+
+  }
+},
+
+/**
+* en cas d'erreur de la requete
+*/
+ajaxError : function(data){
+  console.log(data);
+  console.log(data.detail.response);
+  console.log(data.detail.error);
+  console.log(data.detail.error.message);
+},
+afficheLocalName: function(node){
+  var valSplit ;
+  if(node == undefined){
+    valSplit = this.localName; //.toUpperCase();
+  }else{
+    if (node.type == "literal"){
+      valSplit = '" '+node.value+' "';
+      /*  if (node.value.startsWith("http://")){
+      valSplit = "<a href="+valSplit+">"+valSplit+"</a>";
+    }*/
+  }else{
+    valSplit = node.value.split("#")[1];
+    if (valSplit == undefined){
+      valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
     }
   }
-  return valSplit;
+}
+return valSplit;
 },
 showDetailSujet: function(e){
-  var sujet = e.model.item.Sujet;
-  this.showDetail(sujet);
+var sujet = e.model.item.Sujet;
+this.showDetail(sujet);
 },
 showDetailPredicat: function(e){
-  var predicat = e.model.item.Predicat;
-  this.showDetail(predicat);
+var predicat = e.model.item.Predicat;
+this.showDetail(predicat);
 },
 showDetailObjet: function(e){
-  var objet = e.model.item.Objet;
-  this.showDetail(objet);
+var objet = e.model.item.Objet;
+this.showDetail(objet);
 },
 showDetail: function(node){
-  this.setCurrentNode(node);
-  // page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
-  page.redirect("/detail");
+this.setCurrentNode(node);
+// page.redirect("/detail/"+node.type+"/"+this.afficheLocalName(node));
+page.redirect("/detail");
 },
 setCurrentNode: function(node){
-  const currentNode = node;
-  if (currentNode){
-    this.dispatch('setCurrentNode', currentNode);
-  }
+const currentNode = node;
+if (currentNode){
+  this.dispatch('setCurrentNode', currentNode);
+}
 },
 /* SUPPRESSION D'UN TRIPLET*/
 _supp(e,detail){
-  var item = e.model.item;
-  this.sujetTemp = this.splitDecompose(item.Sujet);
-  this.proprieteTemp = this.splitDecompose(item.Predicat);
-  this.objetTemp = this.splitDecompose(item.Objet);
-  this.$.suppDialog.toggle();
+var item = e.model.item;
+this.sujetTemp = this.splitDecompose(item.Sujet);
+this.proprieteTemp = this.splitDecompose(item.Predicat);
+this.objetTemp = this.splitDecompose(item.Objet);
+this.$.suppDialog.toggle();
 },
 _suppTriplet: function(){
-  var oldObjetType = this.objetTemp.type;
-  var oldSujetUri = this.sujetTemp.uri;
-  var oldPropUri = this.proprieteTemp.uri;
-  var oldObjUri = this.objetTemp.uri;
-  var query = '';
-  if (this.graphe != ""){
-    query+= 'WITH '+this.graphe+'\n';
-  }
-  query += 'DELETE \n';
-  if (oldObjetType !="literal"){
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-  }else{
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-  }
-  query += 'WHERE\n';
-  if (oldObjetType !="literal"){
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-  }else{
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-  }
-  this.urlChangement = this.computeUrlDetail(this.url,this.ds,'update');
-  this.query = query;
-  this.optionsModif = {};
-  this.optionsModif.update=query;
-  console.log(this.query);
-  console.log(this.$.ajaxChangement);
-  this.$.ajaxChangement.generateRequest();
-  this.$.suppDialog.toggle();
+var oldObjetType = this.objetTemp.type;
+var oldSujetUri = this.sujetTemp.uri;
+var oldPropUri = this.proprieteTemp.uri;
+var oldObjUri = this.objetTemp.uri;
+var query = '';
+if (this.graphe != ""){
+  query+= 'WITH '+this.graphe+'\n';
+}
+query += 'DELETE \n';
+if (oldObjetType !="literal"){
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+}else{
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+}
+query += 'WHERE\n';
+if (oldObjetType !="literal"){
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+}else{
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+}
+this.urlChangement = this.computeUrlDetail(this.url,this.ds,'update');
+this.query = query;
+this.optionsModif = {};
+this.optionsModif.update=query;
+console.log(this.query);
+console.log(this.$.ajaxChangement);
+this.$.ajaxChangement.generateRequest();
+this.$.suppDialog.toggle();
 
 },
 /* MODIFICATION D'UN TRIPLET */
 _modif(e,detail){
-  //          console.log(e.model.item);
-  var item = e.model.item;
-  this.sujetTemp = this.splitDecompose(item.Sujet);
-  this.proprieteTemp = this.splitDecompose(item.Predicat);
-  this.objetTemp = this.splitDecompose(item.Objet);
-  this.$.dialog.toggle();
+//          console.log(e.model.item);
+var item = e.model.item;
+this.sujetTemp = this.splitDecompose(item.Sujet);
+this.proprieteTemp = this.splitDecompose(item.Predicat);
+this.objetTemp = this.splitDecompose(item.Objet);
+this.$.dialog.toggle();
 },
 _sendChangement: function(){
-  //          console.log(this.objetTemp.type);
+//          console.log(this.objetTemp.type);
 
-  var oldSujetUri = this.sujetTemp.uri;
-  var oldPropUri = this.proprieteTemp.uri;
-  var oldObjUri = this.objetTemp.uri;
-  var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
-  var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
-  var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
-  var oldObjetType = this.objetTemp.type;
-  var newObjLiteral =  this.$.literal.checked;
+var oldSujetUri = this.sujetTemp.uri;
+var oldPropUri = this.proprieteTemp.uri;
+var oldObjUri = this.objetTemp.uri;
+var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
+var newPropUri ;
+//= this.proprieteTemp.prefix+this.proprieteTemp.localName;
+var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
+var oldObjetType = this.objetTemp.type;
+var newObjLiteral =  this.$.literal.checked;
 
-  // MODIFICATION D'UN TRIPLET
-  var query = '';
-  if (this.graphe != ""){
-    query = 'WITH '+this.graphe+'\n';
-  }
-  query += 'DELETE \n';
-  if (oldObjetType == "uri"){
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-  }else{
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-  }
-  query += 'INSERT \n';
-  if (!newObjLiteral){
-    query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
-  }else{
-    query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
-  }
-  query += 'WHERE\n';
-  if (oldObjetType == "uri"){
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-  }
-  else{
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-  }
-  this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
-  this.query = query;
-  this.optionsModif = {};
-  this.optionsModif.update=query;
-  console.log(this.query);
-  console.log(this.$.ajaxChangement);
-  this.$.ajaxChangement.generateRequest();
-  this.$.dialog.toggle();
+switch(this.proprieteTemp.localName) {
+  case "type":
+  newPropUri="rdf:type";
+  break;
+  case "hasPart":
+  newPropUri="dcterms:hasPart";
+  break;
+  case "isPartOf":
+  newPropUri="dcterms:isPartOf";
+  break;
+  case "subClassOf":
+  newPropUri="rdfs:subClassOf";
+  break;
+  case "sameAs":
+  newPropUri="owl:sameAs";
+  break;
+  case "label":
+  newPropUri = "rdfs:label";
+  break;
+  default:
+  //  newPropUri = "smag:"+propriete;
+  newPropUri = '<'+this.proprieteTemp.prefix+this.proprieteTemp.localName+'>';
+}
+
+
+// MODIFICATION D'UN TRIPLET
+var query  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+query +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+query += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+query += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+query += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
+//  update += "INSERT DATA { \n";
+if (this.graphe != ""){
+  query += 'WITH '+this.graphe+'\n';
+}
+query += 'DELETE \n';
+if (oldObjetType == "uri"){
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+}else{
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+}
+query += 'INSERT \n';
+if (!newObjLiteral){
+  query += '{ <'+newSujUri+'> '+newPropUri+' <'+newObjUri+'> }\n';
+}else{
+  query += '{ <'+newSujUri+'> '+newPropUri+' "'+newObjUri+'" }\n';
+}
+query += 'WHERE\n';
+if (oldObjetType == "uri"){
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+}
+else{
+  query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+}
+this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
+this.query = query;
+this.optionsModif = {};
+this.optionsModif.update=query;
+console.log(this.query);
+console.log(this.$.ajaxChangement);
+this.$.ajaxChangement.generateRequest();
+this.$.dialog.toggle();
 },
 /**
 * recupere et parse la reponse du serveur
 */
 handleResponseChange: function(data){
-  console.log(data);
-  var html=data.detail.response.getElementsByTagName("html")[0];
-  var body=html.getElementsByTagName("body")[0];
-  var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
-  this.result=resultat;
-  console.log(this.result);
-  var nb=this.nb+1;
-  this.dispatch('update_nb_maj', nb);
+console.log(data);
+var html=data.detail.response.getElementsByTagName("html")[0];
+var body=html.getElementsByTagName("body")[0];
+var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
+this.result=resultat;
+console.log(this.result);
+var nb=this.nb+1;
+this.dispatch('update_nb_maj', nb);
 },
 /**
 * en cas d'erreur de la requete
 */
 ajaxErrorChange : function(data){
-  console.log(data.detail.error.message);
-  console.log(this.$.ajaxGet.url);
-  console.log(this.$.ajaxGet.options);
+console.log(data.detail.error.message);
+console.log(this.$.ajaxGet.url);
+console.log(this.$.ajaxGet.options);
 },
 splitDecompose: function(binding){
-  var binding = binding;
-  var result = {};
-  if (binding == undefined){
-    binding = this.currentNode;
-  }
-  var type = binding.type;
-  var prefix = binding.value.split("#")[0];
-  var localName =  binding.value.split("#")[1];
-  if (localName == undefined){
-    prefix = binding.value.substring(0, binding.value.lastIndexOf("/") + 1);
-    localName = binding.value.substring(binding.value.lastIndexOf("/") + 1, binding.value.length);
-  }else{
-    prefix = prefix+"#";
-  }
-  result.uri = binding.value;
-  result.type = type;
-  result.prefix= prefix;
-  result.localName = localName;
+var binding = binding;
+var result = {};
+if (binding == undefined){
+  binding = this.currentNode;
+}
+var type = binding.type;
+var prefix ="";
+if (binding.value != undefined){
+  prefix = binding.value.split("#")[0];
+}
+var localName =  binding.value.split("#")[1];
+if (localName == undefined){
+  prefix = binding.value.substring(0, binding.value.lastIndexOf("/") + 1);
+  localName = binding.value.substring(binding.value.lastIndexOf("/") + 1, binding.value.length);
+}else{
+  prefix = prefix+"#";
+}
+result.uri = binding.value;
+result.type = type;
+result.prefix= prefix;
+result.localName = localName;
 
-  console.log(result);
-  return result;
+console.log(result);
+return result;
 },
 _nbChanged : function(){
-  if (this.urlDetail != undefined){
-    this.$.ajaxGet.generateRequest();
-  }
+if (this.urlDetail != undefined){
+  this.$.ajaxGet.generateRequest();
+}
 },
 
 //FONCTIONS LANCEES PAR DES EVENEMENTS UTILISATEUR
 _recharger: function(){
-  this.$.ajaxGet.generateRequest();
+this.$.ajaxGet.generateRequest();
 },
 _partager: function(){
-  console.log(this.currentNode);
- // this.shareUrl = this.currentNode.value;
- var node = this.currentNode;
- var valSplit = node.value.split("#")[1];
-      if (valSplit == undefined){
-        valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
-      }
-      this.valSplit = valSplit;
- this.shareUrl = "http://"+window.location.host+"/%3Fsearch="+valSplit;
-    this.$.share.toggle();
+console.log(this.currentNode);
+// this.shareUrl = this.currentNode.value;
+var node = this.currentNode;
+var valSplit = node.value.split("#")[1];
+if (valSplit == undefined){
+  valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
+}
+this.valSplit = valSplit;
+this.shareUrl = "http://"+window.location.host+"/%3Fsearch="+valSplit;
+this.$.share.toggle();
 },
 _closeShare: function(){
-    this.$.share.toggle();
+this.$.share.toggle();
 },
 _openAdd: function(item){
 //var item = e.model.item;
 console.log(item);
-  this.sujetTemp = this.splitDecompose(item.Sujet);
-  this.proprieteTemp = this.splitDecompose(item.Predicat);
-  this.objetTemp = this.splitDecompose(item.Objet);
-
-
-
-  this.$.addDialog.toggle();
+this.sujetTemp = this.splitDecompose(item.Sujet);
+this.proprieteTemp = this.splitDecompose(item.Predicat);
+this.objetTemp = this.splitDecompose(item.Objet);
+this.$.addDialog.toggle();
 },
 
 _addTriplet: function(){
-  //          console.log(this.objetTemp.type);
+//          console.log(this.objetTemp.type);
 
-  var oldSujetUri = this.sujetTemp.uri;
-  var oldPropUri = this.proprieteTemp.uri;
-  var oldObjUri = this.objetTemp.uri;
-  var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
-  var newPropUri = this.proprieteTemp.prefix+this.proprieteTemp.localName;
-  var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
-  var oldObjetType = this.objetTemp.type;
-  var newObjLiteral =  this.$.literal.checked;
-
-  // MODIFICATION D'UN TRIPLET
- /* var query = '';
-  if (this.graphe != ""){
-    query = 'WITH '+this.graphe+'\n';
-  }*/
- // query += 'DELETE \n';
- // if (oldObjetType == "uri"){
- //   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
- // }else{
- //   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
- // }
-  /*query += 'INSERT \n';
-  if (!newObjLiteral){
-    query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
-  }else{
-    query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
-  }*/
- /* query += 'WHERE\n';
-  if (oldObjetType == "uri"){
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
-  }
-  else{
-    query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
-  }*/
-        var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-      update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
-      update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
-      update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
-      update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
-      update += "INSERT DATA { \n";
-      if (this.graphe != ""){
-        update += "GRAPH "+this.graphe+"{ \n";
-      }
-  if (!newObjLiteral){
-    update += '<'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> \n';
-  }else{
-    update += ' <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" \n';
-  }
-      if (this.graphe != ""){
-        update += "  } \n";
-      }
-      update += "  } \n";
-  this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
-  this.query = update;
-  this.optionsModif = {};
-  this.optionsModif.update=update;
-  console.log(this.query);
-  console.log(this.$.ajaxChangement);
-  this.$.ajaxChangement.generateRequest();
-  this.$.addDialog.toggle();
+var oldSujetUri = this.sujetTemp.uri;
+var oldPropUri = this.proprieteTemp.uri;
+var oldObjUri = this.objetTemp.uri;
+var newSujUri = this.sujetTemp.prefix+this.sujetTemp.localName;
+var newPropUri;
+// = this.proprieteTemp.prefix+this.proprieteTemp.localName;
+var newObjUri = this.objetTemp.prefix+this.objetTemp.localName;
+var newObjetTemp = this.objetTemp.localName;
+var oldObjetType = this.objetTemp.type;
+switch(this.proprieteTemp.localName) {
+  case "type":
+  newPropUri="rdf:type";
+  break;
+  case "hasPart":
+  newPropUri="dcterms:hasPart";
+  break;
+  case "isPartOf":
+  newPropUri="dcterms:isPartOf";
+  break;
+  case "subClassOf":
+  newPropUri="rdfs:subClassOf";
+  break;
+  case "sameAs":
+  newPropUri="owl:sameAs";
+  break;
+  case "label":
+  newPropUri = "rdfs:label";
+  break;
+  default:
+  //  newPropUri = "smag:"+propriete;
+  newPropUri = '<'+this.proprieteTemp.prefix+this.proprieteTemp.localName+'>';
+}
+if (this.objetTemp.localName.indexOf(' ') >= 0){
+  this.$.literalAdd.checked = true;
+}
+var newObjLiteral =  this.$.literalAdd.checked;
+// MODIFICATION D'UN TRIPLET
+/* var query = '';
+if (this.graphe != ""){
+query = 'WITH '+this.graphe+'\n';
+}*/
+// query += 'DELETE \n';
+// if (oldObjetType == "uri"){
+//   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+// }else{
+//   query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+// }
+/*query += 'INSERT \n';
+if (!newObjLiteral){
+query += '{ <'+newSujUri+'> <'+newPropUri+'> <'+newObjUri+'> }\n';
+}else{
+query += '{ <'+newSujUri+'> <'+newPropUri+'> "'+newObjUri+'" }\n';
+}*/
+/* query += 'WHERE\n';
+if (oldObjetType == "uri"){
+query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> <'+oldObjUri+'> }\n';
+}
+else{
+query += '{ <'+oldSujetUri+'> <'+oldPropUri+'> "'+oldObjUri+'" }\n';
+}*/
+var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
+update += "INSERT DATA { \n";
+if (this.graphe != ""){
+update += "GRAPH "+this.graphe+"{ \n";
+}
+if (!newObjLiteral){
+update += '<'+newSujUri+'> '+newPropUri+' <'+newObjUri+'> \n';
+}else{
+update += ' <'+newSujUri+'> '+newPropUri+' "'+newObjetTemp+'" \n';
+}
+if (this.graphe != ""){
+update += "  } \n";
+}
+update += "  } \n";
+this.urlChangement= this.computeUrlDetail(this.url,this.ds,'update');
+this.query = update;
+this.optionsModif = {};
+this.optionsModif.update=update;
+console.log(this.query);
+console.log(this.$.ajaxChangement);
+this.$.ajaxChangement.generateRequest();
+this.$.addDialog.toggle();
 },
+_vuesChanged: function(vues){
+console.log("vues CHANGED");
+console.log(this.vues);
+console.log(vues);
+    if( this.vues.length >0){
+      this.showListVue = true;
+    }
+    else{this.showListVue = false;}
+    console.log(this.showListVue );
+this.showProjetVue = false;
+this.showPersonneVue = false;
+this.$.vueListBox.selected = 1;
+},
+_vueSelected: function(e){
+var selectedItem = e.target.selectedItem;
+if (selectedItem) {
+  console.log(selectedItem.innerText);
+  var vocabTexte = selectedItem.innerText;
+  this.selectVocab(vocabTexte);
+  console.log(selectedItem.id);
+  /*  if (selectedItem.innerText == "Autre"){
+  this.showListDropdown = false;
+  this.literalChecked = true;
+  this.objet = "";
+}else{
+this.objet = selectedItem.innerText;
+this.literalChecked = false;
+}*/
+}
+},
+selectVocab: function(vocabTexte){
+this.showProjetVue = false;
+this.showPersonneVue = false;
+switch(vocabTexte) {
+  case "Projet":
+  console.log("doap");
+  this.showProjetVue = true;
+  this.dispatch('setCurrentVue', "doap");
+  break;
+  case "Personne":
+  console.log("foaf");
+  this.showPersonneVue = true;
+  this.dispatch('setCurrentVue', "foaf");
+  break;
+  default:
+  console.log("vocab inconnu, implémenter la recherche, et l'ajout de vocab");
+  this.showProjetVue = false;
+  this.showPersonneVue = false;
+}
+},
+reverse: function(array){
+return array.reverse();
+}
 
 });
 
