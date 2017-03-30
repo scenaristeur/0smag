@@ -32,7 +32,7 @@ const initialState = {
 };
 
 /* DEBUT a virer dans une autre page avec une action */
-console.log(window.location.search);
+
 if ((window.location.hostname != "127.0.0.1") && (window.location.hostname != "localhost")){
 initialState.url =  "https://rdf-smag0.rhcloud.com";
 initialState.ds = "ds";
@@ -42,7 +42,7 @@ initialState.graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
 
 
 
-console.log(initialState);
+
 /* FIN A VIRER DANS UNE AUTRE PAGE */
 
 
@@ -113,9 +113,9 @@ const reducer = (state, action) => {
     //  ds = "ds";
     //  graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
     }
-    console.log(url);
-    console.log(ds);
-    console.log(graphe);
+   // console.log(url);
+    //console.log(ds);
+    //console.log(graphe);
     return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
     break;
 

@@ -56,7 +56,9 @@
 
   </style>
 
-  <iron-ajax
+ <!-- A REMETTRE pour recuperer le tps de reponse du serveur
+  MAIS MESSAGE D'erreur
+ <iron-ajax
   auto
   id="getUptime"
   url="{{urlUptime}}"
@@ -65,7 +67,7 @@
   on-response="handleResponse"
   on-error="ajaxError"
   debounce-duration="300">
-</iron-ajax>
+</iron-ajax>-->
 
 
 <h3>
@@ -188,7 +190,6 @@ Polymer({
   },
   setServeur: function(e){
     var serveur = e.target.attributes.serveur.value;
-    console.log(serveur);
     this.dispatch('setServeur', serveur);
   },
   //test pour connaitre le temps de reponse du serveur, ses caracteristiques...
@@ -202,7 +203,7 @@ Polymer({
     var urlUptime = url+pingUrl;*/
 
     var urlUptime = url+"/$/server";  //!!! NE FONCTIONNE PAS AVEC LA VERSION 1 DE FUSEKI
-    console.log(urlUptime);
+   // console.log(urlUptime);
     return urlUptime;
   },
   /* Recuperation de la reponse */

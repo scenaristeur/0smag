@@ -805,14 +805,12 @@ this.$.ajaxChangement.generateRequest();
 this.$.addDialog.toggle();
 },
 _vuesChanged: function(vues){
-console.log("vues CHANGED");
-console.log(this.vues);
-console.log(vues);
     if( this.vues.length >0){
       this.showListVue = true;
     }
-    else{this.showListVue = false;}
-    console.log(this.showListVue );
+    else{
+      this.showListVue = false;
+    }
 this.showProjetVue = false;
 this.showPersonneVue = false;
 this.$.vueListBox.selected = 1;

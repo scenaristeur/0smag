@@ -47,11 +47,11 @@
   </paper-listbox>
 </paper-dropdown-menu>
 <paper-input
-type="text"
 style="width:20em"
 label="Objet"
+type="search"
 value="{{objet::input}}">
-<paper-icon-button suffix icon="icons:backspace" on-tap="_showListDropdown" title="Cacher champ input"></paper-icon-button>
+<!--type="search"<paper-icon-button suffix icon="icons:backspace" on-tap="_showListDropdown" title="Cacher champ input"></paper-icon-button>-->
 </paper-input>
 <paper-toggle-button hidden$={{showListDropdown}} checked="{{literalChecked}}" id="literal">Literal</paper-toggle-button>
 <paper-input hidden$={{!literalChecked}} id="lang" style="width:5em" label="langue" value="{{lang}}"></paper-input>
@@ -304,11 +304,11 @@ ajaxError : function(data){
   console.log(data.detail.error.message);
 },
 _updateVue: function(e){
-  console.log(this.currentVue);
-  console.log(e);
+ // console.log(this.currentVue);
+ // console.log(e);
 
   if (Object.keys(this.currentVue).length === 0){
-    console.log("vue vide");
+  //  console.log("vue vide");
   }else{
     // RECHERCHE DES VOCABULAIRES SUR LOV.OKFN.ORG this.url='http://lov.okfn.org/dataset/lov/api/v2/vocabulary/search?q='+this.currentVue; //+'&lang=French'
     if( this.currentVue == "doap"){

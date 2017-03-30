@@ -243,9 +243,7 @@ debounce-duration="300">
     },
     reverso: function(array1){
       if(array1 != null){
-      console.log(array1);
-      var rArray=array1.reverse();
-      console.log(rArray);
+        var rArray=array1.reverse();
       return rArray;}
     },
     setCurrentNode: function(node){
@@ -256,7 +254,7 @@ debounce-duration="300">
     },
     computedUrl: function(url,ds,action){
       this.results = null;
-      console.log(ds);
+    //  console.log(ds);
       if(ds != undefined){
         return [url,ds,action].join('/');
       }else{
@@ -270,7 +268,7 @@ debounce-duration="300">
         this.query = 'SELECT * WHERE {?Sujet ?Predicat ?Objet}'
       }
       var queryLimite=this.query+" LIMIT "+limite;
-      console.log(queryLimite);
+      //console.log(queryLimite);
       return{query: queryLimite, output: output};
     },
     /* SUPPRESSION D'UN TRIPLET*/
@@ -387,8 +385,8 @@ debounce-duration="300">
       console.log(data.detail.error.message);
     },
     _nbChanged : function(){
-      console.log(this.query);
-      console.log(this.options);
+     // console.log(this.query);
+     // console.log(this.options);
       this.$.ajaxGet.generateRequest();
     },
     splitDecompose: function(binding){
