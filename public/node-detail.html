@@ -699,7 +699,7 @@ if (valSplit == undefined){
   valSplit = node.value.substring(node.value.lastIndexOf("/") + 1, node.value.length);
 }
 this.valSplit = valSplit;
-this.shareUrl = "http://"+window.location.host+"/%3Fsearch="+valSplit;
+this.shareUrl = "http://"+window.location.host+"/?search="+valSplit;
 this.$.share.toggle();
 },
 _closeShare: function(){
