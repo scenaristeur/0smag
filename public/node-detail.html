@@ -248,17 +248,17 @@ A METTRE PLUS TARD
 <!--{{shareUrl}}</p>-->
 </paper-dialog-scrollable>
 <twitter-link
-href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
-<a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{shareUrl}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
+href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{encode(shareUrl)}}" height="15px"></twitter-link>
+<a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{encode(shareUrl)}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
 
-<facebook-link href="https://www.facebook.com/sharer/sharer.php?u={{shareUrl}}" height="15px"></facebook-link>
+<facebook-link href="https://www.facebook.com/sharer/sharer.php?u={{encode(shareUrl)}}" height="15px"></facebook-link>
 <!--<vimeo-link href="https://www.vimeo.com/@smag0" height="15px"></vimeo-link>
 <skype-link href="https://www.skype.com/@" height="15px"></skype-link>-->
-<youtube-link href="https://plus.google.com/share?url={{shareUrl}}" height="15px"></youtube-link>
+<youtube-link href="https://plus.google.com/share?url={{encode(shareUrl)}}" height="15px"></youtube-link>
 
-<linkedin-link href="https://www.linkedin.com/shareArticle?mini=true&url={{shareUrl}}&title=La%20r%C3%A9volution%20des%20donn%C3%A9es%20ouvertes&summary=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.&source={{shareUrl}}" height="15px"></linkedin-link>
+<linkedin-link href="https://www.linkedin.com/shareArticle?mini=true&url={{encode(shareUrl)}}&title=La%20r%C3%A9volution%20des%20donn%C3%A9es%20ouvertes&summary=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.&source={{encode(shareUrl)}}" height="15px"></linkedin-link>
 <!--<behance-link href="https://www.behance.com/@bkawk" height="15px"></behance-link>-->
-<pinterest-link href="https://pinterest.com/pin/create/button/?url={{shareUrl}}&description=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres." height="15px"></pinterest-link>
+<pinterest-link href="https://pinterest.com/pin/create/button/?url={{encode(shareUrl)}}&description=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres." height="15px"></pinterest-link>
 <!--
 <convoo-link href="https://www.convoo.me/@bkawk" height="15px"></convoo-link>
 <snapchat-link href="https://www.snapchat.com/@bkawk" height="15px"></snapchat-link>
@@ -377,10 +377,14 @@ properties: {
           computed: 'computeUrlData(urlDetail, options)'
         }
 },
+encode: function(string){
+return encodeURIComponent(string);
+},
+/*
 replaceAll : function(string,search, replacement) {
     var target = string;
     return target.replace(new RegExp(search, 'g'), replacement);
-},
+},*/
       computeUrlData: function(urlDetail, options) {
         console.log(urlDetail);
         console.log(options);
