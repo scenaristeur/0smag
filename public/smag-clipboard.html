@@ -1,0 +1,126 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="redux-store.html"><!--
+<link rel="import" href="bower_components/iron-demo-helpers/demo-snippet.html">-->
+
+
+<dom-module id="smag-clipboard" texte="{{texte}}" label="{{label}}">
+<template>
+    <style is="custom-style" include="prism-theme-default"></style>
+    <style>
+      :host {
+        display: block;
+        @apply(--shadow-elevation-2dp);
+        @apply(--demo-snippet);
+      }
+
+
+
+      .code {
+        padding: 10px;
+        margin: 0;
+        background-color: var(--google-grey-100);
+        font-size: 13px;
+        width: 50em;
+        overflow: auto;
+        @apply(--demo-snippet-code);
+      }
+
+      .code > pre {
+        margin: 0;
+        padding: 0 0 0 0;
+      }
+
+      .code-container {
+        position: relative;
+      }
+
+      paper-icon-button {
+        position: absolute;
+        top: 0;
+        right: 0px;
+      }
+
+    </style>
+<!--
+    <prism-highlighter></prism-highlighter>
+
+        <div class="demo">
+      <content id="content"></content>
+    </div>-->
+       <div class="code-container">
+  
+
+          <marked-element markdown=[[_markdown]] id="marked">
+       <!-- <div class="markdown-html code" id="code">{{texte}}</div>-->
+      [[label]]<paper-icon-button
+          id="copyButton"
+          icon="content-copy"
+          title="copy to clipboard"
+          on-tap="_copyToClipboard"
+          suffix>
+      </paper-icon-button>
+        <paper-input class="markdown-html code"id="code" value="{{texte}}">
+          
+<!--
+      <paper-icon-button
+          id="copyButton"
+          icon="content-copy"
+          title="copy to clipboard"
+          on-tap="_copyToClipboard"
+          suffix>
+      </paper-icon-button>-->
+
+
+        </paper-input>
+
+      </marked-element>
+    
+</template>
+
+<script>
+Polymer({
+is: 'smag-clipboard',
+behaviors: [ ReduxBehavior ],
+properties: {
+
+
+},
+
+
+      _copyToClipboard: function() {
+          console.log(this.$.code);
+          
+        // From https://github.com/google/material-design-lite/blob/master/docs/_assets/snippets.js
+        var snipRange = document.createRange();
+        snipRange.selectNodeContents(this.$.code);
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(snipRange);
+        console.log(selection);
+         console.log(snipRange);
+        var result = false;
+        try {
+          result = document.execCommand('copy');
+          console.log(result);
+          this.$.copyButton.icon = 'done';
+        } catch (err) {
+          // Copy command is not available
+          Polymer.Base._error(err);
+          this.$.copyButton.icon = 'error';
+        }
+
+        // Return to the copy button after a second.
+        setTimeout(this._resetCopyButtonState.bind(this), 1000);
+
+        selection.removeAllRanges();
+        return result;
+      },
+            _resetCopyButtonState: function() {
+        this.$.copyButton.icon = 'content-copy';
+      }
+});
+
+</script>
+
+</dom-module>

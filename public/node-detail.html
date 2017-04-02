@@ -38,6 +38,7 @@
 <link rel="import" href="smag-projet.html">
 <link rel="import" href="smag-personne.html">
 <link rel="import" href="smag-vis.html">
+<link rel="import" href="smag-clipboard.html">
 
 
 <dom-module id="node-detail">
@@ -239,8 +240,13 @@ A METTRE PLUS TARD
 
 <paper-dialog id="share" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
 <h2>Partager</h2>
-
-<p>{{shareUrl}}</p>
+<paper-dialog-scrollable>
+ <smag-clipboard texte="{{shareUrl}}" label="Cette page"></smag-clipboard> 
+ <smag-clipboard texte="{{urlData}}" label="Les données de cette page"></smag-clipboard> 
+ <smag-clipboard texte="{{urlDetail}}" label="Endpoint"></smag-clipboard>
+ <smag-clipboard texte="{{query}}" label="Requete"></smag-clipboard>
+<!--{{shareUrl}}</p>-->
+</paper-dialog-scrollable>
 <twitter-link
 href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{shareUrl}}" height="15px"></twitter-link>
 <a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{shareUrl}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
@@ -323,9 +329,12 @@ properties: {
   },
   urlDetail:{
     type: String,
+    notify: true
     //  computed: 'computeUrlDetail(url,ds,action)'
   },
   options: {
+    type: Object,
+    notify: true
     //  computed: 'computedOptions(graphe,limite,output)'
   },
   limite : {
@@ -354,8 +363,29 @@ properties: {
   showPersonneVue: {
     type: Boolean,
     value: false
-  }
+  },
+          first:{
+            type: String,
+            value: "fi"
+          } ,
+
+        last: {
+          type: String,
+          value: "la"},
+        urlData: {
+          type: String,
+          computed: 'computeUrlData(urlDetail, options)'
+        }
 },
+replaceAll : function(string,search, replacement) {
+    var target = string;
+    return target.replace(new RegExp(search, 'g'), replacement);
+},
+      computeUrlData: function(urlDetail, options) {
+        console.log(urlDetail);
+        console.log(options);
+        return urlDetail + '?query=' + encodeURIComponent(options.query);
+      },
 literalNode: function(node){
   if (node== undefined){
     node = this.currentNode;
@@ -417,6 +447,8 @@ computedOptions: function(graphe,limite,output){
 },
 /* Recuperation de la reponse */
 handleResponse:function(data){
+  console.log(this.options);
+  console.log(data.detail);
   this.vues = [];
   this.showListVue = false;
   this.head=data.detail.response.head.vars;
@@ -854,7 +886,8 @@ switch(vocabTexte) {
 },
 reverse: function(array){
 return array.reverse();
-}
+},
+
 
 });
 
