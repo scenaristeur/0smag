@@ -240,13 +240,7 @@ A METTRE PLUS TARD
 
 <paper-dialog id="share" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
 <h2>Partager</h2>
-<paper-dialog-scrollable>
- <smag-clipboard texte="{{shareUrl}}" label="Cette page"></smag-clipboard> 
- <smag-clipboard texte="{{urlData}}" label="Les données de cette page"></smag-clipboard> 
- <smag-clipboard texte="{{urlDetail}}" label="Endpoint"></smag-clipboard>
- <smag-clipboard texte="{{query}}" label="Requete"></smag-clipboard>
-<!--{{shareUrl}}</p>-->
-</paper-dialog-scrollable>
+
 <twitter-link
 href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes avec %23Smag0 %23DAtaREvolution et @dfaveris {{encode(shareUrl)}}" height="15px"></twitter-link>
 <a href="mailto:destinataire?&subject=Les données totalement libres avec Smag0 !&body=Les%20donn%C3%A9es%20sont%20maintenant%20totalement%20libres%20et%20ouvertes%20sur%20Smag0.%20Tout%20le%20monde%20peut%20partager%20son%20expertise%20et%20b%C3%A9n%C3%A9ficier%20de%20celle%20des%20autres.%0A%0A{{encode(shareUrl)}}" target="_blank"><paper-icon-button icon="mail" title="Mail" ></paper-icon-button></a>
@@ -266,6 +260,13 @@ href="https://twitter.com/intent/tweet?text=La révolution des données ouvertes
 <instagram-link href="https://www.instagram.com/@bkawk" height="15px"></instagram-link>
 <dribbble-link href="https://www.dribbble.com/@bkawk" height="15px"></dribbble-link> -->
 <!-- <paper-button  raised on-tap="_closeShare">OK</paper-button>-->
+<paper-dialog-scrollable>
+ <smag-clipboard texte="{{shareUrl}}" label="Cette page"></smag-clipboard> 
+ <smag-clipboard texte="{{urlData}}" label="Les données de cette page"></smag-clipboard> 
+ <smag-clipboard texte="{{urlDetail}}" label="Endpoint"></smag-clipboard>
+ <smag-clipboard texte="{{query}}" label="Requete"></smag-clipboard>
+<!--{{shareUrl}}</p>-->
+</paper-dialog-scrollable>
     <div class="buttons">
   <paper-button dialog-dismiss raised>Annuler</paper-button>
   <paper-button dialog-confirm autofocus   raised  on-tap="_closeShare">OK</paper-button>

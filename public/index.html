@@ -249,8 +249,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <section data-route="faq">
 <paper-material elevation="1">
 <h2 class="page-title">FAQ</h2>
-<p>Foire aux questions</p>
-<p>documente</p>
+<h3>Comment utiliser les données de Smag0 ?</h3>
+<p>
+Pour utiliser les données de Smag0, prenons un exemple.</br>
+Admettons que vous souhaitiez utiliser la liste des projets de "La nuit du code citoyen",
+ rendez-vous sur la page concernée <a href="http://smag-cece4.firebaseapp.com/?search=ProjetNcc" target="_blank">http://smag-cece4.firebaseapp.com/?search=ProjetNcc</a>.
+</p>
+<p>
+    Cliquez ensuite sur l'icone 'Partager' (
+    <paper-icon-button icon="social:share" title="Partager" class="style-scope node-detail x-scope paper-icon-button-0" role="button" tabindex="0" aria-disabled="false">
+  </paper-icon-button>). Vous avez alors accès aux requêtes pour accéder aux données.</p>
+<p>
+    Dans le cadre 'Les données de cette page', vous verrez
+     <b>https://rdf-smag0.rhcloud.com/ds/query?query=SELECT%20*%20FROM%20%3Chttp%3A%2F%2Fsmag0.blogspot.fr%2FSparqlUpdate%3E%20WHERE%20%7B%20%7B%20%3Chttp%3A%2F%2Fsmag0.blogspot.fr%2FNS%23ProjetNcc%3E%20%3FPredicat%20%3FObjet%7D%20UNION%20%7B%20%3FSujet%20%3FPredicat%20%3Chttp%3A%2F%2Fsmag0.blogspot.fr%2FNS%23ProjetNcc%3E%20%20%7D%20%7D%20LIMIT%20100</b>
+    Vous pouvez copier cette adresse et la coller dans un navigateur pour voir les données au format json, ou l'utiliser dans une requete Ajax.
+</p>
+<p>
+    Cette requete utilise le serveur Endpoint désigné dans le cadre 'Endpoint' (<b>https://rdf-smag0.rhcloud.com/ds/query</b>) 
+    et la requête mentionnée dans le cadre 'Requete' (
+        <pre>SELECT * FROM <http://smag0.blogspot.fr/SparqlUpdate> WHERE { { <http://smag0.blogspot.fr/NS#ProjetNcc> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <http://smag0.blogspot.fr/NS#ProjetNcc>  } }</pre>,
+     liés par le paramètre '?query='.</p>
+<p>    Ce qui nous donne '<b>Endpoint</b>'+'?query='+'<b>Requete</b>'
+</p>
 </paper-material>
 </section>
 
