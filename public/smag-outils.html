@@ -1,0 +1,239 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="styles/shared-styles.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/iron-list/iron-list.html">
+<link rel="import" href="rdf/rdf-behavior.html">
+<!--<link rel="import" href="bower_components/vaadin-upload/vaadin-upload.html"> ,
+https://howtonode.org/really-simple-file-uploads
+"vaadin-upload": "^1.1.4"besoin de code serverside. A voir plus tard si besoin de stocker les fichiers http://stackoverflow.com/questions/36177983/uploading-image-using-polymer-and-node-js/36369529-->
+
+
+
+<link rel="import" href="redux-store.html">
+
+
+<dom-module id="smag-outils">
+  <template>
+  <style include="shared-styles iron-flex"></style>
+  <div class="card">
+    <div class="container">
+      <h1>Convertisseur XLS vers RDF </h1>
+      <a href="http://rdf-smag0.rhcloud.com/js-xls/" target="_blank">http://rdf-smag0.rhcloud.com/js-xls/</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="container">
+      <h1>Importer un fichier RDF dans le graphe de visualisation</h1>
+
+      <paper-input id="filepicker" on-change="_filesChanged"  type="file" multiple></paper-input>
+
+
+
+      <div slot="file-list">
+        <h4>Fichiers</h4>
+        <ul>
+          <template is="dom-repeat" items="{{files}}" as="file">
+            <li>
+              <strong>[[file.name]]</strong>
+              [[file.status]]
+            </li>
+          </template>
+        </ul>
+      </div>
+
+<ul>
+<template is="dom-repeat" items="[[triplets]]" as="triplet">
+<li>[[triplet.sujet]]</li>
+</template>
+
+</ul>
+
+      <!--  <vaadin-upload id="filesUpload" upload-start="_uploadStart" target="public/files" method="POST" timeout="300000" headers="{'X-Custom-Header': 'value'}" form-data-name="my-attachment" files="{{files}}">
+      <div slot="file-list">
+      <h4>Fichiers</h4>
+      <ul>
+      <template is="dom-repeat" items="{{files}}" as="file">
+      <li>
+      <strong>[[file.name]]</strong>
+      [[file.status]]
+    </li>
+  </template>
+</ul>
+</div>
+</vaadin-upload>-->
+
+
+
+
+
+</div>
+</div>
+<!--
+<ul>
+<template is="dom-repeat" items="[[statements]]" as="statement">
+<li>[[statement]]</li>
+</template>
+
+</ul> -->
+</template>
+
+<script>
+Polymer({
+  is: 'smag-outils',
+  behaviors: [ ReduxBehavior , Smag0.RdfBehavior],
+  /* actions:{
+  add: function(name){
+  return {
+  type: 'ADD_STATEMENT',
+  statement: name
+}
+}
+
+},*//*
+observers: [
+  '_triplets2AddChanged(reader.triplets2add, filter)'
+],*/
+/*actions:{
+      update_triplets: function(triplets){
+      return {
+        type: 'UPDATE_TRIPLETS',
+        triplets: triplets
+      }
+    }
+},*/
+properties: {
+  statements: {
+    type: Array,
+    statePath: 'statements'
+  },
+  endpoint: {
+    type: Object,
+    statePath: 'endpoint'
+  },
+  files: {
+    type: Array,
+    value: [],
+    observer: '_filesChanged'
+  },
+  message: {
+    type: String
+  },
+  triplets: {
+    type: Array
+  },
+  reader: {
+    type: Object,
+   // value: newReader() //https://openclassrooms.com/courses/dynamisez-vos-sites-web-avec-javascript/l-api-file
+  }
+},
+ready: function(){
+  console.log("############ TEST d'utilisation des BEHAVIORS dans rdf / rdf-behavior.html ################");
+  console.log(Smag0);
+  var test = this.getTestValue();
+  console.log(test);
+  console.log(this.testValue);
+
+},
+_filesChanged: function(event){
+  //console.log(event);
+  var thisElement = this;
+  var fichiers = this.$.filepicker.inputElement.files;
+  this.push('files', fichiers);
+  console.log(fichiers);
+  for ( i=0; i<fichiers.length; i++){
+    var fichier = fichiers[i];
+    console.log(fichier.name);
+    console.log(fichier.type);
+
+   reader = new FileReader(); //https://openclassrooms.com/courses/dynamisez-vos-sites-web-avec-javascript/l-api-file
+
+    reader.addEventListener('load', function() {
+      /*loadstart : La lecture vient de commencer.
+      progress : Tout comme avec les objets XHR, l'événement progress se déclenche à intervalles réguliers durant la progression de la lecture. Il fournit, lui aussi, un objet en paramètre possédant deux propriétés, loaded et total, indiquant respectivement le nombre d'octets lus et le nombre d'octets à lire en tout.
+      load : La lecture vient de se terminer avec succès.
+      loadend : La lecture vient de se terminer (avec ou sans succès).
+      abort : Se déclenche quand la lecture est interrompue (avec la méthode abort() par exemple).
+      error : Se déclenche quand une erreur a été rencontrée. La propriété error contiendra alors un objet de type FileError pouvant vous fournir plus d'informations.*/
+    //  console.log(this);
+      alert('Contenu du fichier "' + fichier.name + '" :\n\n' + reader.result);
+
+
+      switch (fichier.type){
+        case "rdf+xml":
+        case "application/rdf+xml":
+        console.log("fichier RDF"); //https://github.com/scenaristeur/dreamcatcherAutonome/blob/8376cb5211095a90314e34e9d286b820fbed335b/autonome1/public/agents/FichierAgent.js
+        thisElement.rdf2Xml(reader.result, thisElement);
+        break;
+        case "":
+        case "turtle":
+        case "text/turtle":
+        case "application/turtle":
+        console.log("fichier turtle");
+        console.log("ce type de fichier n'est pas pris en compte ("+fichier.type+")");
+        thisElement.ttl2Xml(reader.result, thisElement);
+        break;
+        default:
+        console.log("ce type de fichier n'est pas pris en compte ("+fichier.type+")");
+        console.log(this.message);
+      }
+
+ // thisApp.dispatch('update_triplets2add', this.triplets2add);
+
+    });
+    reader.readAsText(fichier);
+
+  }
+},
+_tripletsChanged: function(data){
+  console.log('{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}');
+  console.log('TRIPLETS CHANGED');
+  console.log(data);
+}
+
+/*ready: function(){
+var filesUpload = this.$.filesUpload;
+console.log(filesUpload);
+filesUpload.addEventListener('upload-before', function(event) {
+console.log('upload xhr before open: ', event.detail.xhr);
+
+// Prevent the upload request:
+// event.preventDefault();
+
+var file = event.detail.file;
+
+// Custom upload request url for file
+file.uploadTarget = filesUpload.target + '/' + file.name;
+
+// Custom name in the Content-Disposition header
+file.formDataName = 'attachment';
+});
+
+filesUpload.addEventListener('upload-request', function(event) {
+console.log('upload xhr after open: ', event.detail.xhr);
+
+event.detail.xhr.setRequestHeader('X-File-Name', event.detail.file.name);
+event.detail.formData.append('documentId', 1234);
+});
+
+filesUpload.addEventListener('upload-start', function(event) {
+console.log('upload xhr after send: ', event.detail.xhr);
+});
+
+},*/
+
+
+/*
+_uploadStart: function(detail){
+//https://vaadin.com/elements/-/element/vaadin-upload#docs
+console.log(detail);
+console.log(detail.xhr);
+console.log(detail.file);
+}*/
+
+});
+
+</script>
+
+</dom-module>

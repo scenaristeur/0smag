@@ -89,6 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="smag-queryparam.html">
 <link rel="import" href="smag-search.html">
 <link rel="import" href="smag-filtre.html">
+<link rel="import" href="smag-outils.html">
 
 
 <!--  <script src="scripts/trace.js"></script> -->
@@ -129,6 +130,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <a data-route="visualisation" href="{{baseUrl}}visualisation">
 <iron-icon icon="dashboard"></iron-icon>
 <span>Visualisation</span>
+</a>
+
+<a data-route="outils" href="{{baseUrl}}outils">
+<iron-icon icon="dashboard"></iron-icon>
+<span>Outils</span>
 </a>
 
 <a data-route="parametres" href="{{baseUrl}}parametres">
@@ -265,7 +271,7 @@ Admettons que vous souhaitiez utiliser la liste des projets de "La nuit du code 
     Vous pouvez copier cette adresse et la coller dans un navigateur pour voir les données au format json, ou l'utiliser dans une requete Ajax.
 </p>
 <p>
-    Cette requete utilise le serveur Endpoint désigné dans le cadre 'Endpoint' (<b>https://rdf-smag0.rhcloud.com/ds/query</b>) 
+    Cette requete utilise le serveur Endpoint désigné dans le cadre 'Endpoint' (<b>https://rdf-smag0.rhcloud.com/ds/query</b>)
     et la requête mentionnée dans le cadre 'Requete' (
         <pre>SELECT * FROM <http://smag0.blogspot.fr/SparqlUpdate> WHERE { { <http://smag0.blogspot.fr/NS#ProjetNcc> ?Predicat ?Objet} UNION { ?Sujet ?Predicat <http://smag0.blogspot.fr/NS#ProjetNcc>  } }</pre>,
      liés par le paramètre '?query='.</p>
@@ -326,6 +332,10 @@ Le résultat est un fichier json contenant les triplets sous la forme (Sujet, Pr
 
 <section data-route="debug">
 <smag-debug></smag-debug>
+</section>
+
+<section data-route="outils">
+<smag-outils></smag-outils>
 </section>
 
 </iron-pages>
