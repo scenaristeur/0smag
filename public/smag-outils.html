@@ -115,7 +115,7 @@ properties: {
   files: {
     type: Array,
     value: [],
-    observer: '_filesChanged'
+  //  observer: '_filesChanged'
   },
   message: {
     type: String
@@ -140,10 +140,11 @@ _filesChanged: function(event){
   //console.log(event);
   var thisElement = this;
   var fichiers = this.$.filepicker.inputElement.files;
-  this.push('files', fichiers);
+
   console.log(fichiers);
   for ( i=0; i<fichiers.length; i++){
     var fichier = fichiers[i];
+    this.push('files', fichier);
     console.log(fichier.name);
     console.log(fichier.type);
 
