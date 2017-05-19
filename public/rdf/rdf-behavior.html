@@ -21,7 +21,7 @@ Smag0.RdfBehavior = {
   },
   rdf2Xml: function(data, destinataire){
     // reprise de https://github.com/scenaristeur/graphe/blob/master/js/conversion.js
-    console.log(data);
+  //  console.log(data);
 
     if (window.DOMParser)
     {
@@ -34,7 +34,7 @@ Smag0.RdfBehavior = {
       xmlDoc.async = false;
       xmlDoc.loadXML(data);
     }
-    console.log(xmlDoc.childNodes);
+  //  console.log(xmlDoc.childNodes);
 
     for(var i = 0; i< xmlDoc.childNodes.length; i++){
       var element = xmlDoc.childNodes[i];
@@ -57,8 +57,8 @@ Smag0.RdfBehavior = {
         break;
         default :
         console.log("non traite 1 , type : "+type);
-        console.log(type +" "+name+" "+value);
-        console.log(element);
+      //  console.log(type +" "+name+" "+value);
+    //    console.log(element);
         break;
       }
     }
@@ -66,7 +66,7 @@ Smag0.RdfBehavior = {
   },
   ttl2Xml: function(data,destinataire){
     // reprise de https://github.com/scenaristeur/graphe/blob/master/js/conversion.js
-    console.log(data);
+  //  console.log(data);
     var prefixes=[];
     var base="";
     var separateur="";
@@ -81,7 +81,7 @@ Smag0.RdfBehavior = {
                var prefix=lignePrefixCuted[0].trim();
                var vpWithPoint=lignePrefixCuted[1].trim();
                var valeurPrefix = vpWithPoint.substring(0, vpWithPoint.length-1).trim();
-               console.log(prefix+" --> "+valeurPrefix);
+            //   console.log(prefix+" --> "+valeurPrefix);
 
                if(prefix==""){
                    prefix=":";
@@ -99,13 +99,13 @@ Smag0.RdfBehavior = {
                var ligneSplit=ligne.split(" ");
 
                if(ligneSplit.length>1){
-                   console.log(ligneSplit.length);
-                   console.log(ligneSplit);
+                //   console.log(ligneSplit.length);
+                //   console.log(ligneSplit);
 
                    var ligneValide=false;
                    switch(ligneSplit.length) {
                        case 5:
-                       console.log("A g�rer, import avec graphe ?");
+                    //   console.log("A g�rer, import avec graphe ?");
                        ligneValide=false;
                        break;
                        case 4:
@@ -123,7 +123,7 @@ Smag0.RdfBehavior = {
                            ligneValide=true;
                            } else {
                            ligneValide=false;
-                           console.log("PB avec ligneSplit 3");
+                      //     console.log("PB avec ligneSplit 3");
                        }
                        break;
                        case 2:
@@ -133,16 +133,16 @@ Smag0.RdfBehavior = {
                            ligneValide=true;
                            } else {
                            ligneValide=false;
-                           console.log("PB avec ligneSplit2");
+                        //   console.log("PB avec ligneSplit2");
                        }
                        break;
                        case 1:
                        ligneValide=false;
-                       console.log("un seul champ pour ligneSplit -> pas d'info");
+                      // console.log("un seul champ pour ligneSplit -> pas d'info");
                        break;
                        default :
                        ligneValide=false;
-                       console.log("pb de ligne");
+                    //   console.log("pb de ligne");
                        //   sketch.ajouteInformation("smag:"+sujet, "rdf:type", "smag:"+message);
                    }
                }
@@ -159,7 +159,7 @@ Smag0.RdfBehavior = {
                        objet=objet.substring(1);
                    }
 
-                   console.log(" => "+sujet+" "+propriete+" "+objet);
+                //   console.log(" => "+sujet+" "+propriete+" "+objet);
                    //ajouteInformation(sujet, propriete, objet);
                  //  var newStatement = new Statement(sujet, propriete,objet);
                  //  newStatement.add2Statements();
@@ -195,7 +195,7 @@ Smag0.RdfBehavior = {
     var objectProperties=[];
     var datatypeProperties=[];
     var comments=[];
-    console.log(data.childNodes);
+  //  console.log(data.childNodes);
     for(var i = 0; i< data.childNodes.length; i++){
       var element = data.childNodes[i];
       var name = element.nodeName;
@@ -224,8 +224,8 @@ Smag0.RdfBehavior = {
 
           break;
           case "owl:AnnotationProperty" :
-          console.log(type +" "+name+" "+value);
-          console.log(element);
+      //    console.log(type +" "+name+" "+value);
+      //    console.log(element);
           console.log("non traite 7 ");
           break;
           case "owl:Class" :
@@ -238,8 +238,8 @@ Smag0.RdfBehavior = {
           this.parseRdfsClass(element);
           break;
           case "rdf:Property" :
-          console.log(type +" "+name+" "+value);
-          console.log(element);
+    //      console.log(type +" "+name+" "+value);
+      //    console.log(element);
           console.log("non traite 5 ");
           break;
           case "owl:ObjectProperty" :
@@ -249,9 +249,9 @@ Smag0.RdfBehavior = {
           this.parseObjectProperty(element);
           break;
           case "owl:DatatypeProperty" :
-          console.log(type +" "+name+" "+value);
+      //    console.log(type +" "+name+" "+value);
           console.log("non traite 9 ");
-          console.log(element);
+      //    console.log(element);
           break;
 
           case "owl:NamedIndividual" :
@@ -262,8 +262,8 @@ Smag0.RdfBehavior = {
           break;
           default :
           console.log("non traite 3 , name : "+name);
-          console.log(type +" "+name+" "+value);
-          console.log(element);
+        //  console.log(type +" "+name+" "+value);
+        //  console.log(element);
           break;
 
 
@@ -272,7 +272,7 @@ Smag0.RdfBehavior = {
         break;
         case 3 :
         if(value.trim() != ""){
-          console.log(type +" "+name+" "+value);
+        //  console.log(type +" "+name+" "+value);
         }
         break;
         case 8 :
@@ -282,8 +282,8 @@ Smag0.RdfBehavior = {
         default :
         console.log("non traite 2 , type : "+type);
 
-        console.log(type +" "+name+" "+value);
-        console.log(element);
+      //  console.log(type +" "+name+" "+value);
+      //  console.log(element);
         break;
       }
 
@@ -314,10 +314,10 @@ Smag0.RdfBehavior = {
       for(var i = 0; i< data.childNodes.length; i++){
         var element = data.childNodes[i];
         var nodeType= element.nodeType;
-        console.log(element);
+      //  console.log(element);
         var propriete=element.localName;
         if (nodeType==1){
-          console.log(sujet+" "+propriete+" "+objet);
+        //  console.log(sujet+" "+propriete+" "+objet);
           //  var newStatement = new Statement(sujet, propriete,objet);
           //  newStatement.add2Statements();
           var triplet = {sujet: sujet, propriete: propriete, objet:objet};
@@ -369,7 +369,7 @@ Smag0.RdfBehavior = {
           }else{
             objetInside=element.innerHTML;
           }
-          console.log(sujet+" "+propriete+" "+objetInside);
+        //  console.log(sujet+" "+propriete+" "+objetInside);
           //  var newStatement = new Statement(sujet, propriete, objetInside);
           //  newStatement.add2Statements();
           //var triplet = new Triplet(sujet, propriete,objetInside);
@@ -410,7 +410,7 @@ Smag0.RdfBehavior = {
           }
           statementPropriete=localName;
           statementObjet=innerhtml;
-          console.log(statementSujet+" -> "+statementPropriete+" -> "+statementObjet);
+      //    console.log(statementSujet+" -> "+statementPropriete+" -> "+statementObjet);
           //  var newStatement = new Statement(statementSujet, statementPropriete,statementObjet);
           //  newStatement.add2Statements();
           //  var triplet = new Triplet(statementSujet, statementPropriete,statementObjet);
@@ -449,7 +449,7 @@ Smag0.RdfBehavior = {
         objetPrefix=laClasse.split(":")[0];
         objet=laClasse.split(":")[1];
       }
-      console.log(sujet+" "+propriete+" "+objet);
+    //  console.log(sujet+" "+propriete+" "+objet);
       //  var newStatement = new Statement(sujet, propriete,objet);
       //  newStatement.add2Statements();
       var triplet = {sujet: sujet, propriete: propriete, objet: objet};
